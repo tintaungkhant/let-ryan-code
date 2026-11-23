@@ -169,6 +169,7 @@ Restart the tool after installing. In Antigravity CLI, `/skills reload` also wor
 skills/ryan-*/     one folder per skill (SKILL.md, agents/openai.yaml, templates/)
 examples/          real output on a sample app
 tests/             validate.mjs and the test scenarios
+bench/             benchmark: no skills vs let-ryan-code vs Matt Pocock's skills
 docs/sources/      where each rule comes from (not shipped to agents)
 ```
 

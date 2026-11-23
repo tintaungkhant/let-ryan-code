@@ -1,0 +1,12 @@
+{
+  "name": "tiny-crm",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "start": "node src/server.js",
+    "migrate": "node src/migrate.js",
+    "seed": "node scripts/seed.js",
+    "test": "node --test"
+  }
+}
