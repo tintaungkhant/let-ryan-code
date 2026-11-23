@@ -33,11 +33,12 @@ function frontmatter(text, where) {
   return fields;
 }
 
-const skills = readdirSync(root).filter((d) => d.startsWith("ryan-") && statSync(join(root, d)).isDirectory());
+const skillsDir = join(root, "skills");
+const skills = readdirSync(skillsDir).filter((d) => d.startsWith("ryan-") && statSync(join(skillsDir, d)).isDirectory());
 const autoInvoked = new Set(["ryan-plan"]);
 
 for (const skill of skills) {
-  const file = join(root, skill, "SKILL.md");
+  const file = join(skillsDir, skill, "SKILL.md");
   const where = `${skill}/SKILL.md`;
   if (!existsSync(file)) { fail(skill, "missing SKILL.md"); continue; }
   const text = read(file);
@@ -50,7 +51,7 @@ for (const skill of skills) {
   else if (fm.description.length > 1024) fail(where, "description over 1024 characters");
   if (text.split("\n").length > 500) fail(where, "over 500 lines");
 
-  const yaml = join(root, skill, "agents", "openai.yaml");
+  const yaml = join(skillsDir, skill, "agents", "openai.yaml");
   const yamlText = existsSync(yaml) ? read(yaml) : "";
   if (!yamlText) fail(skill, "missing agents/openai.yaml");
   if (autoInvoked.has(skill)) {
@@ -67,7 +68,7 @@ for (const skill of skills) {
   }
 }
 
-const wakeUp = join(root, "ryan-wake-up");
+const wakeUp = join(skillsDir, "ryan-wake-up");
 const wakeUpSkill = read(join(wakeUp, "SKILL.md"));
 for (const file of walk(join(wakeUp, "templates"))) {
   for (const [placeholder] of read(file).matchAll(/\{\{[a-z_]+\}\}/g)) {
