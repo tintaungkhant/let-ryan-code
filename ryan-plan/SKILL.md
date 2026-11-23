@@ -1,9 +1,9 @@
 ---
-name: planner
+name: ryan-plan
 description: Small planner for tickets and backlog. Use when the user asks to plan or break down a feature into tickets, asks what to work on next or to pick up a ticket, or wants to park an idea for later ("note this", "do it later", "add to backlog", "show the backlog"). A discussion or "what if" question is answered in chat; use this skill only once the user chooses to plan or park it.
 ---
 
-# Planner
+# Ryan, let's plan
 
 Four flows: **plan**, **next ticket**, **park**, **show backlog**. Pick the one the user's request matches.
 

@@ -1,10 +1,10 @@
 ---
-name: agent-setup
-description: Set up a project's agent files (AGENTS.md, CLAUDE.md, .ai/rules/, docs/) by asking the user setup questions. Run only when the user asks for agent-setup by name.
+name: ryan-wake-up
+description: Set up a project's agent files (AGENTS.md, CLAUDE.md, .ai/rules/, docs/) by asking the user setup questions. Run only when the user asks for ryan-wake-up by name.
 disable-model-invocation: true
 ---
 
-# Agent setup
+# Ryan, wake up
 
 Writes one set of agent instructions that Claude and Codex both read: `AGENTS.md` is the single source, `CLAUDE.md` only imports it, and the rules live in `.ai/rules/`. The user's answers to the setup questions decide the preference rules.
 
@@ -26,9 +26,9 @@ Done when you can name: the project in one line, the check commands (typecheck, 
 
 Use the tool's structured question tool if it has one (Claude Code `AskUserQuestion`, up to 4 per call; OpenCode `question`; Antigravity `ask_question`); otherwise ask in chat, a few at a time. Ask in the user's language. Put the default first.
 
-**Re-run:** if `.ai/setup-answers.md` exists, show the saved answers and ask which ones to change. Ask in full only the changed ones and any question missing from the file. Then change only what a changed answer or a newer template affects: back up and rewrite only those files, leave the rest untouched, and set `date:` to today.
+**Re-run** (also what `ryan-rethink` starts): if `.ai/setup-answers.md` exists, show the saved answers and ask which ones to change. Ask in full only the changed ones and any question missing from the file. Then change only what a changed answer or a newer template affects: back up and rewrite only those files, leave the rest untouched, and set `date:` to today.
 
-**Deploy only:** if the user asks agent-setup for deploy only (for example `/agent-setup deploy`, or "set up deploy"; most new apps set up deploys later), ask only `deploy_owner`, `deploy` and `commit_deployment`. Then run steps 3 to 5 for the deploy files only: the "Deploy" section of `AGENTS.md`, the `deploy` row in `autonomy.md`, `.ai/deployment.md`, `.ai/credentials.md`, `.gitignore`, and `.ai/setup-answers.md`.
+**Deploy only:** when started from `ryan-ship`, or when the user asks for deploy setup only (most new apps set up deploys later), ask only `deploy_owner`, `deploy` and `commit_deployment`. Then run steps 3 to 5 for the deploy files only: the "Deploy" section of `AGENTS.md`, the `deploy` row in `autonomy.md`, `.ai/deployment.md`, `.ai/credentials.md`, `.gitignore`, and `.ai/setup-answers.md`.
 
 **yes / no / flexible** (yes = act without asking; no = always ask; flexible = ask only when it matters):
 
@@ -55,7 +55,7 @@ Use the tool's structured question tool if it has one (Claude Code `AskUserQuest
 | `test_style` | How does this project test? | TDD / tests, not test-first / no tests, typecheck is the gate |
 | `commit_body` | Commit messages are always a short Conventional Commits title (`feat(auth): add password reset`). Add a body too? | title only / title and body |
 | `attribution` | Add an AI co-author line (`Co-Authored-By`) to commits and PRs? | yes / no |
-| `deploy_owner` | Who deploys this project? Ask before `deploy`. | not set up yet, set up later by running agent-setup for deploy / we deploy / devops deploys |
+| `deploy_owner` | Who deploys this project? Ask before `deploy`. | not set up yet, set up later with `ryan-ship` / we deploy / devops deploys |
 | `commit_deployment` | Commit `.ai/deployment.md` to git? Ask only when "we deploy". Commit it only if it holds no secrets. | no, gitignore it / yes |
 | `planner_store` | Where do tickets and backlog live? | local files in `.scratch/` / GitHub issues (`gh`) / other (ask which CLI or MCP tool, and the commands to create, list and close an item) |
 | `commit_scratch` | Commit the local tickets and backlog in `.scratch/` to git? Ask only when `planner_store` is local files. | yes / no, gitignore it |
@@ -109,7 +109,7 @@ Fill the placeholders:
   - yes: "Add the AI co-author line to commits and pull requests."
   - no: "Add no AI attribution: no `Co-Authored-By` line and no 'Generated with' line."
 - `{{deploy_section}}`:
-  - not set up yet: "No deploy plan yet. Do not deploy or change servers or cloud resources. When the user is ready, they run the agent-setup skill for deploy."
+  - not set up yet: "No deploy plan yet. Do not deploy or change servers or cloud resources. When the user is ready, they run `ryan-ship`."
   - we deploy: "Before any deploy, server or cloud task, read `.ai/deployment.md` and `.ai/credentials.md`. Read `credentials.md` for no other task."
   - devops deploys: "Devops does the deploys. Do not deploy or change servers or cloud resources. Prepare the change, then tell the user what devops needs: migrations, new env variables, config changes."
 - `{{project_name}}`: the package manifest's `name`, else the folder name.
