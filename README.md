@@ -8,7 +8,7 @@ Talk to Ryan, your coding agent. One set of agent rules and a small planner for 
 ```
 /ryan-wake-up     set this project up
 /ryan-plan        plan a feature into tickets
-/ryan-next        pick up the next ticket
+/ryan-do 02       implement ticket 02 (or the next one)
 /ryan-talk        just discuss, no spec
 ```
 
@@ -58,7 +58,7 @@ Ryan reads the project, asks about a dozen setup questions, and writes the agent
 | `ryan-rethink` | Changes the setup answers; asks only what you want to change and keeps your own edits. |
 | `ryan-ship` | Sets up deploys: who deploys, `.ai/deployment.md`, `.ai/credentials.md`. Run it once the app is ready to ship. |
 | `ryan-plan` | Plans a feature: a few questions, then a chain of tickets. Also starts on its own when you ask to plan. |
-| `ryan-next` | Picks up the next open ticket, runs the checks, ticks only what it verified. |
+| `ryan-do` | Implements a ticket: `ryan-do 02`, `ryan-do #12`, or just `ryan-do` for the next open one. Runs the checks and ticks only what it verified. |
 | `ryan-remember` | Parks an idea in the backlog, e.g. `ryan-remember CSV import for contacts`. |
 | `ryan-backlog` | Shows the backlog. |
 | `ryan-talk` | Discusses an idea or a what-if. No spec, no tickets, no files. |
@@ -97,7 +97,7 @@ docs/README.md
 
 | Tool | Status |
 |---|---|
-| Claude Code | Tested: all 7 scenarios in [tests/scenarios.md](tests/scenarios.md) |
+| Claude Code | Tested: scenarios 1 to 7 in [tests/scenarios.md](tests/scenarios.md) |
 | Codex | Built to the official skill docs; not yet tested |
 | OpenCode | Built to the official skill docs; not yet tested |
 | Antigravity | Built to the official skill docs; not yet tested |

@@ -1,5 +1,0 @@
-interface:
-  display_name: "Ryan: what's next?"
-  short_description: "Pick up the next ticket"
-policy:
-  allow_implicit_invocation: false

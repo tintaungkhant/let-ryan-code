@@ -5,7 +5,7 @@ description: Small planner for tickets and backlog. Use when the user asks to pl
 
 # Ryan, let's plan
 
-Four flows: **plan**, **next ticket**, **park**, **show backlog**. Pick the one the user's request matches.
+Four flows: **plan**, **do a ticket**, **park**, **show backlog**. Pick the one the user's request matches.
 
 Run a flow only when the user asks for it. A discussion or a "what if" question gets an answer in chat, not a spec or tickets. At the end of a discussion, ask once: park it, plan it, record a decision, or nothing.
 
@@ -68,9 +68,9 @@ Bad: "Acceptance: tags work well and the UI looks nice." Nothing in it can be ch
 2. **Split.** Write the feature as a linear chain of tickets: each ticket blocked by the one before it, unless it is independent. Show the list (titles, goals, blockers) to the user. Done when the user confirms the list; if they ask for changes, make them and show the list again.
 3. **Save.** Create the confirmed tickets in the store. Add the answers the user confirmed during the grill to "Decisions" in `AGENTS.md`. Done when listing the store shows every confirmed ticket.
 
-## Next ticket
+## Do a ticket
 
-1. Take the lowest-numbered open ticket whose blocker is closed. Work on one ticket at a time.
+1. Pick the ticket. If the user named one (`02`, `#12`, `contact-tags/02`), take it; if the name matches more than one ticket, ask which. If its blocker is still open, say so and ask before starting. If the user named none, take the lowest-numbered open ticket whose blocker is closed. Work on one ticket at a time.
 2. If the ticket's plan conflicts with a newer decision, rewrite the ticket's scope first. Do not leave the old plan in place.
 3. When the work is done, run the commands under "Checks" in `AGENTS.md` and read their output. Then tick only the acceptance boxes you verified; a box that names a command counts as verified only when that command ran and passed. Then mark the ticket done, and point to the commit or PR. If committing needs the user's OK (`autonomy.md`), ask for it first; the ticket is done once the commit exists. Local: set `Status: done` and add a `Done in: <commit or PR>` line. GitHub: close it with a comment. Done when the ticket is marked done and every box is ticked; if a box cannot be ticked, the ticket stays open and you tell the user why.
 
