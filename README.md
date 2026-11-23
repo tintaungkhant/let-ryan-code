@@ -30,7 +30,19 @@ Every rule traces to a real project or a decision; see [docs/sources](docs/sourc
 npx skills add tintaungkhant/let-ryan-code -g
 ```
 
-Pick your agents when asked. Then, in any project:
+Pick your agents when asked. The picker pre-ticks only the agents that share `~/.agents/skills` (Codex, OpenCode, Cursor, …); tick **Claude Code** and **Antigravity** yourself if you use them.
+
+Or skip the picker and name your agents:
+
+| For | Command |
+|---|---|
+| Claude Code, Codex, OpenCode, Antigravity | `npx skills add tintaungkhant/let-ryan-code -g --skill '*' -a claude-code -a codex -a opencode -a antigravity -y` |
+| Claude Code only | `npx skills add tintaungkhant/let-ryan-code -g --skill '*' -a claude-code -y` |
+| Codex only | `npx skills add tintaungkhant/let-ryan-code -g --skill '*' -a codex -y` |
+| OpenCode only | `npx skills add tintaungkhant/let-ryan-code -g --skill '*' -a opencode -y` |
+| Antigravity only | `npx skills add tintaungkhant/let-ryan-code -g --skill '*' -a antigravity -y` |
+
+Drop `-g` to install into the current project instead of globally. Then, in any project:
 
 ```
 /ryan-wake-up
