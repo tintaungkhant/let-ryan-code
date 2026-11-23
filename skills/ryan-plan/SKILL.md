@@ -72,7 +72,7 @@ Bad: "Acceptance: tags work well and the UI looks nice." Nothing in it can be ch
 
 1. Take the lowest-numbered open ticket whose blocker is closed. Work on one ticket at a time.
 2. If the ticket's plan conflicts with a newer decision, rewrite the ticket's scope first. Do not leave the old plan in place.
-3. When the work is done, run the commands under "Checks" in `AGENTS.md` and read their output. Then tick only the acceptance boxes you verified, mark the ticket done, and point to the commit or PR. Local: set `Status: done` and add a `Done in: <commit or PR>` line. GitHub: close it with a comment. Done when the ticket is marked done and every box is ticked; if a box cannot be ticked, the ticket stays open and you tell the user why.
+3. When the work is done, run the commands under "Checks" in `AGENTS.md` and read their output. Then tick only the acceptance boxes you verified; a box that names a command counts as verified only when that command ran and passed. Then mark the ticket done, and point to the commit or PR. If committing needs the user's OK (`autonomy.md`), ask for it first; the ticket is done once the commit exists. Local: set `Status: done` and add a `Done in: <commit or PR>` line. GitHub: close it with a comment. Done when the ticket is marked done and every box is ticked; if a box cannot be ticked, the ticket stays open and you tell the user why.
 
 Red flags: stop and correct course when you catch yourself thinking any of these.
 

@@ -64,7 +64,7 @@ Done when every question has an answer. Also confirm the one-line description an
 
 ## 3. Back up and merge
 
-If any target file already exists, copy it to `.ai/backup-<YYYY-MM-DD>/` first, so the setup can be undone. Appending lines to `.gitignore` needs no backup.
+If any target file already exists, copy it to `.ai/backup-<YYYY-MM-DD-HHMM>/` first, so the setup can be undone. Appending lines to `.gitignore` needs no backup.
 
 When merging into an existing file, keep:
 
