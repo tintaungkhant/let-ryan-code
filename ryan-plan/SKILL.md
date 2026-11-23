@@ -41,23 +41,51 @@ Blocked by: <NN or none>
 - [ ] <checkable outcome>
 ```
 
-A ticket is one coherent step that can be committed on its own and passes the project's checks.
+A ticket is one coherent step that can be committed on its own and passes the project's checks. Each acceptance box is something you can check by running or reading, not a feeling.
+
+Good:
+
+```markdown
+# 02 Add and remove tags on a contact
+
+Status: open
+Blocked by: 01
+
+## Goal
+A user can add a tag to a contact and remove it from the contact page.
+
+## Acceptance
+- [ ] The contact page has an input that adds a tag and a remove button on each tag.
+- [ ] Adding a duplicate tag (any letter case) shows a validation error from the server.
+- [ ] A test covers add, remove and the duplicate error.
+```
+
+Bad: "Acceptance: tags work well and the UI looks nice." Nothing in it can be checked.
 
 ## Plan
 
-1. **Grill.** Ask questions one at a time, each with your recommended answer. Skip anything the code, the docs or `AGENTS.md` "Decisions" already answer: look first. Aim for at most 10 questions; ask more only when a real gap remains. If the feature needs something that does not exist yet (a table, a page, a service), ask whether to plan it first as the opening tickets or to stop; never plan on top of something assumed to exist. Done when you can write every ticket's goal and acceptance boxes without guessing.
-2. **Split.** Write the feature as a linear chain of tickets: each ticket blocked by the one before it, unless it is independent. Show the list (titles, goals, blockers) to the user.
-3. **Save.** After the user confirms the list, create the tickets in the store. Add the answers the user confirmed during the grill to "Decisions" in `AGENTS.md`.
+1. **Grill.** Ask questions one at a time, each with your recommended answer. Example: "Should a tag be shared across contacts, or free text on each contact? I recommend shared, so the list can filter by it." Skip anything the code, the docs or `AGENTS.md` "Decisions" already answer: look first. Aim for at most 10 questions; ask more only when a real gap remains. If the feature needs something that does not exist yet (a table, a page, a service), ask whether to plan it first as the opening tickets or to stop; never plan on top of something assumed to exist. Done when you can write every ticket's goal and acceptance boxes without guessing.
+2. **Split.** Write the feature as a linear chain of tickets: each ticket blocked by the one before it, unless it is independent. Show the list (titles, goals, blockers) to the user. Done when the user confirms the list; if they ask for changes, make them and show the list again.
+3. **Save.** Create the confirmed tickets in the store. Add the answers the user confirmed during the grill to "Decisions" in `AGENTS.md`. Done when listing the store shows every confirmed ticket.
 
 ## Next ticket
 
 1. Take the lowest-numbered open ticket whose blocker is closed. Work on one ticket at a time.
 2. If the ticket's plan conflicts with a newer decision, rewrite the ticket's scope first. Do not leave the old plan in place.
-3. When the work is done and the checks pass, tick its acceptance boxes, mark it done, and point to the commit or PR. Local: set `Status: done` and add a `Done in: <commit or PR>` line. GitHub: close it with a comment.
+3. When the work is done, run the commands under "Checks" in `AGENTS.md` and read their output. Then tick only the acceptance boxes you verified, mark the ticket done, and point to the commit or PR. Local: set `Status: done` and add a `Done in: <commit or PR>` line. GitHub: close it with a comment. Done when the ticket is marked done and every box is ticked; if a box cannot be ticked, the ticket stays open and you tell the user why.
+
+Red flags: stop and correct course when you catch yourself thinking any of these.
+
+| Thought | Instead |
+|---|---|
+| "I'll do the next ticket in the same commit." | One ticket, one commit. Finish this one first. |
+| "The checks probably pass." | Run them and read the output. |
+| "This box is close enough." | Leave it unticked and say what is missing. |
+| "The plan is outdated, I'll just do what makes sense." | Rewrite the ticket's scope first, then do it. |
 
 ## Park
 
-The user wants to note something for later while working on something else, or chose "park it" after a discussion. Do not grill. Save one backlog item: a title, one line of context (what work or discussion it came up in, and what the discussion concluded), and the date or label. Confirm in one line, then return to the current work.
+The user wants to note something for later while working on something else, or chose "park it" after a discussion. Do not grill. Save one backlog item: a title, one line of context (what work or discussion it came up in, and what the discussion concluded), and the date or label. Confirm in one line, then return to the current work. Done when the item is in the backlog.
 
 To start a backlog item later, run **Plan** on it and remove it from the backlog.
 
