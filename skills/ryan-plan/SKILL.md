@@ -1,13 +1,13 @@
 ---
 name: ryan-plan
-description: Small planner for tickets and backlog. Use when the user asks to plan or break down a feature into tickets, asks what to work on next or to pick up a ticket, or wants to park an idea for later ("note this", "do it later", "add to backlog", "show the backlog"). A discussion or "what if" question is answered in chat; use this skill only once the user chooses to plan or park it.
+description: Small planner for tickets and backlog. Use when the user asks to plan or break down a feature into tickets, asks what is next or where things stand ("show tickets", "show the backlog"), asks to do a ticket, or wants to park an idea for later ("note this", "do it later", "add to backlog"). A discussion or "what if" question is answered in chat; use this skill only once the user chooses to plan or park it.
 ---
 
 # Ryan, let's plan
 
-Four flows: **plan**, **do a ticket**, **park**, **show backlog**. Pick the one the user's request matches.
+Four flows: **plan**, **do a ticket**, **park**, **show status**. Pick the one the user's request matches.
 
-Run a flow only when the user asks for it. A discussion or a "what if" question gets an answer in chat, not a spec or tickets. At the end of a discussion, ask once: park it, plan it, record a decision, or nothing.
+Run a flow only when the user asks for it. "What's next?" is **show status**; start a ticket only when the user asks to do it. A discussion or a "what if" question gets an answer in chat, not a spec or tickets. At the end of a discussion, ask once: park it, plan it, record a decision, or nothing.
 
 ## Store
 
@@ -91,6 +91,11 @@ The user wants to note something for later while working on something else, or c
 
 To start a backlog item later, run **Plan** on it and remove it from the backlog.
 
-## Show backlog
+## Show status
 
-List the backlog items, one line each: title and context. Nothing else.
+Show where things stand, and start nothing.
+
+1. Open tickets, grouped by feature, one line each: number, title, and what blocks it. Mark the next one (the lowest-numbered open ticket whose blocker is closed) with `next:`.
+2. Backlog items, one line each: title and context.
+
+If the user asked only about tickets or only about the backlog, show only that part. Then stop; to start the next ticket, the user runs `ryan-do`.

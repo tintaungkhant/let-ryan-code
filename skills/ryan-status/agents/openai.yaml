@@ -1,0 +1,5 @@
+interface:
+  display_name: "Ryan: where are we?"
+  short_description: "Open tickets, next one, and backlog"
+policy:
+  allow_implicit_invocation: false

@@ -60,7 +60,7 @@ Ryan reads the project, asks about a dozen setup questions, and writes the agent
 | `ryan-plan` | Plans a feature: a few questions, then a chain of tickets. Also starts on its own when you ask to plan. |
 | `ryan-do` | Implements a ticket: `ryan-do 02`, `ryan-do #12`, or just `ryan-do` for the next open one. Runs the checks and ticks only what it verified. |
 | `ryan-remember` | Parks an idea in the backlog, e.g. `ryan-remember CSV import for contacts`. |
-| `ryan-backlog` | Shows the backlog. |
+| `ryan-status` | Shows where things stand: open tickets, which one is next, and the backlog. Starts nothing. |
 | `ryan-talk` | Discusses an idea or a what-if. No spec, no tickets, no files. |
 
 All commands except `ryan-plan` run only when you call them. Install every `ryan-*` skill together: the small commands run flows inside `ryan-wake-up` and `ryan-plan`.
