@@ -1,62 +1,98 @@
 ﻿# let-ryan-code
 
-Talk to Ryan, your coding agent. Works in Claude Code, Codex, OpenCode and Antigravity.
+[![validate](https://github.com/tintaungkhant/let-ryan-code/actions/workflows/validate.yml/badge.svg)](https://github.com/tintaungkhant/let-ryan-code/actions/workflows/validate.yml)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+Talk to Ryan, your coding agent. One set of agent rules and a small planner for Claude Code, Codex, OpenCode and Antigravity, distilled from 30 AI-driven projects (personal and company).
+
+```
+/ryan-wake-up     set this project up
+/ryan-plan        plan a feature into tickets
+/ryan-next        pick up the next ticket
+/ryan-talk        just discuss, no spec
+```
+
+## Why
+
+Coding agents out of the box:
+
+- **write a spec when you only asked "what if…?"** Ryan answers in chat, then asks once: park it, plan it, record a decision, or nothing.
+- **ask permission for everything, or for nothing.** Ryan asks you once at setup: for installs, commits, pushes, deploys and paid runs, answer *yes*, *no* or *flexible*.
+- **say "done" without proof.** Ryan reports only checks it ran, never weakens a failing test, and leaves a ticket open when a box is not verified.
+- **burn tokens.** Rules load only when a task touches them, subagents get a cheap model and a precise brief, and a 30-question grill becomes about 10.
+- **leave a mess.** No background dev servers, no detached containers, worktrees only inside the project, a backup before any risky change.
+
+Every rule traces to a real project or a decision; see [docs/sources](docs/sources).
+
+## Quick start
+
+```bash
+npx skills add tintaungkhant/let-ryan-code -g
+```
+
+Pick your agents when asked. Then, in any project:
+
+```
+/ryan-wake-up
+```
+
+Ryan reads the project, asks about a dozen setup questions, and writes the agent files. See the [example output](examples/tiny-crm).
+
+## Commands
 
 | Command | What Ryan does |
 |---|---|
 | `ryan-wake-up` | Sets up the project's agent files (`AGENTS.md`, `CLAUDE.md`, `.ai/rules/`, `docs/`) by asking setup questions. |
-| `ryan-rethink` | Changes the setup answers; asks only what you want to change. |
+| `ryan-rethink` | Changes the setup answers; asks only what you want to change and keeps your own edits. |
 | `ryan-ship` | Sets up deploys: who deploys, `.ai/deployment.md`, `.ai/credentials.md`. Run it once the app is ready to ship. |
 | `ryan-plan` | Plans a feature: a few questions, then a chain of tickets. Also starts on its own when you ask to plan. |
-| `ryan-next` | Picks up the next open ticket. |
+| `ryan-next` | Picks up the next open ticket, runs the checks, ticks only what it verified. |
 | `ryan-remember` | Parks an idea in the backlog, e.g. `ryan-remember CSV import for contacts`. |
 | `ryan-backlog` | Shows the backlog. |
 | `ryan-talk` | Discusses an idea or a what-if. No spec, no tickets, no files. |
 
-All commands except `ryan-plan` run only when you call them. Install every `ryan-*` folder together: the small commands run flows inside `ryan-wake-up` and `ryan-plan`.
+All commands except `ryan-plan` run only when you call them. Install every `ryan-*` skill together: the small commands run flows inside `ryan-wake-up` and `ryan-plan`.
 
-## Install
+## What you get
 
-Link each skill folder into every tool's global skills folder. A link (not a copy) means a `git pull` here updates every tool at once.
+```
+AGENTS.md              the single source: rules index, checks, planner, decisions, deploy
+CLAUDE.md              @AGENTS.md (Claude Code reads AGENTS.md through it)
+.ai/
+  rules/
+    autonomy.md        what Ryan may do without asking; always-on safety rules
+    engineering.md     domain thinking, junior-readable code, packages, validation
+    verification.md    honest reporting, tests, real side effects
+    git.md             Conventional Commits, staging, secrets, worktrees
+    docs.md            keeping docs true, decisions, generated files
+  setup-answers.md     your answers, so a re-run asks only what changed
+  deployment.md        after ryan-ship: environments, steps, rollback, costs
+  credentials.md       after ryan-ship: gitignored, aliases and profiles over raw secrets
+docs/README.md
+.scratch/              tickets and backlog, if you keep them in local files
+```
 
-| Tool | Global skills folder |
+`AGENTS.md` stays short and is loaded every turn; each rule file is read only when a task touches its topic.
+
+## Security
+
+- `.env` files are read only if you allow it at setup. Otherwise Ryan works from `.env.example` and the code.
+- Deploy credentials live in a gitignored file, are read only for deploy tasks, never printed, and never passed to subagents. Logged-in CLIs, SSH aliases and profiles are preferred, so a secret never enters the conversation.
+- Tests never send real messages, emails or payments, and never touch a non-test database.
+- Before committing, Ryan stops if a file holds a secret.
+
+## Works with
+
+| Tool | Status |
 |---|---|
-| Claude Code | `~/.claude/skills/` |
-| Codex, OpenCode | `~/.agents/skills/` |
-| Antigravity | `~/.gemini/config/skills/` |
+| Claude Code | Tested: all 7 scenarios in [tests/scenarios.md](tests/scenarios.md) |
+| Codex | Built to the official skill docs; not yet tested |
+| OpenCode | Built to the official skill docs; not yet tested |
+| Antigravity | Built to the official skill docs; not yet tested |
 
-Windows (PowerShell, from this folder; junctions need no admin rights):
+The files `ryan-wake-up` writes work in all four: Codex, OpenCode and Antigravity read `AGENTS.md` directly, and Claude Code reads it through `CLAUDE.md`.
 
-```powershell
-foreach ($dir in "$HOME\.claude\skills", "$HOME\.agents\skills", "$HOME\.gemini\config\skills") {
-  New-Item -ItemType Directory -Force $dir | Out-Null
-  foreach ($skill in Get-ChildItem -Directory -Filter "ryan-*") {
-    if (-not (Test-Path "$dir\$($skill.Name)")) { New-Item -ItemType Junction -Path "$dir\$($skill.Name)" -Target $skill.FullName | Out-Null }
-  }
-}
-```
-
-macOS / Linux (from this folder):
-
-```bash
-for dir in ~/.claude/skills ~/.agents/skills ~/.gemini/config/skills; do
-  mkdir -p "$dir"
-  for skill in ryan-*/; do
-    skill="${skill%/}"
-    [ -e "$dir/$skill" ] || ln -s "$PWD/$skill" "$dir/$skill"
-  done
-done
-```
-
-Restart the tool after installing. In Antigravity CLI, `/skills reload` also works.
-
-OpenCode reads both `~/.agents/skills/` and `~/.claude/skills/`, so it may list each skill twice. Same files, so it is harmless.
-
-## Update
-
-`git pull` in this repo, then restart the tool. When a pull adds a new `ryan-*` folder, run the install block again to link it.
-
-## Calling a command
+### Calling a command
 
 | Tool | How |
 |---|---|
@@ -65,29 +101,69 @@ OpenCode reads both `~/.agents/skills/` and `~/.claude/skills/`, so it may list 
 | OpenCode | `@ryan-wake-up` |
 | Antigravity | `/ryan-wake-up` |
 
-## How each tool keeps commands user-only
+### How each tool keeps commands user-only
 
 | Tool | Mechanism |
 |---|---|
 | Claude Code, OpenCode | `disable-model-invocation: true` in `SKILL.md` |
 | Codex | `agents/openai.yaml`: `policy.allow_implicit_invocation: false` |
-| Antigravity | no setting exists; each description says "Run only when the user asks for … by name" |
+| Antigravity | No setting exists; each description says "Run only when the user asks for … by name" |
 
-## Project files
+## Other ways to install
 
-The files `ryan-wake-up` writes work in all four tools: Codex, OpenCode and Antigravity read `AGENTS.md` directly; Claude Code reads `CLAUDE.md`, which imports it (`@AGENTS.md`).
+**Update:** `npx skills update`.
+
+**From a clone** (for contributors: your edits apply at once). Link each skill into every tool's global skills folder.
+
+| Tool | Global skills folder |
+|---|---|
+| Claude Code | `~/.claude/skills/` |
+| Codex | `~/.agents/skills/` |
+| OpenCode | `~/.agents/skills/` (also reads `~/.claude/skills/`) |
+| Antigravity | `~/.gemini/config/skills/` |
+
+Windows (PowerShell, from the repo root; junctions need no admin rights):
+
+```powershell
+foreach ($dir in "$HOME\.claude\skills", "$HOME\.agents\skills", "$HOME\.gemini\config\skills") {
+  New-Item -ItemType Directory -Force $dir | Out-Null
+  foreach ($skill in Get-ChildItem -Directory -Filter "ryan-*" skills) {
+    if (-not (Test-Path "$dir\$($skill.Name)")) { New-Item -ItemType Junction -Path "$dir\$($skill.Name)" -Target $skill.FullName | Out-Null }
+  }
+}
+```
+
+macOS / Linux (from the repo root):
+
+```bash
+for dir in ~/.claude/skills ~/.agents/skills ~/.gemini/config/skills; do
+  mkdir -p "$dir"
+  for skill in skills/ryan-*/; do
+    name="$(basename "$skill")"
+    [ -e "$dir/$name" ] || ln -s "$PWD/skills/$name" "$dir/$name"
+  done
+done
+```
+
+Restart the tool after installing. In Antigravity CLI, `/skills reload` also works.
 
 ## Repo layout
 
 ```
-ryan-*/            one folder per skill (SKILL.md, agents/openai.yaml, templates/)
-tests/             validate.mjs and the manual test scenarios
+skills/ryan-*/     one folder per skill (SKILL.md, agents/openai.yaml, templates/)
+examples/          real output on a sample app
+tests/             validate.mjs and the test scenarios
 docs/sources/      where each rule comes from (not shipped to agents)
-CHANGELOG.md, LICENSE
 ```
 
-## Tests
+## Contributing
 
-`node tests/validate.mjs` checks every skill: frontmatter parses, names match folders, user-only settings for each tool, links between skills, and every template placeholder has a fill rule. Add `--project <dir>` to also check a project that `ryan-wake-up` set up. Manual scenarios are in `tests/scenarios.md`.
+1. Edit a skill under `skills/`.
+2. Run `node tests/validate.mjs`. It checks that frontmatter parses, names match folders, each tool's user-only settings are in place, links between skills resolve, and every template placeholder has a fill rule. Add `--project <dir>` to also check a project that `ryan-wake-up` set up.
+3. Run the affected scenarios in [tests/scenarios.md](tests/scenarios.md).
+4. Add a new `ryan-*` skill to the command table above; the validator fails otherwise.
+5. Add a line to [CHANGELOG.md](CHANGELOG.md).
 
-When you add a `ryan-*` skill, add it to the command table above; the validator fails otherwise.
+## License
+
+[MIT](LICENSE)
