@@ -9,7 +9,7 @@ Rules live in `.ai/rules/`, one topic per file. Each file starts with an `Applie
 - `autonomy.md`: what you may do without asking, safety rules that always apply, `.env` files, disagreeing with the user, subagents.
 - `engineering.md`: domain thinking, resource use, how much to build, comments, packages, library docs, generators, server-side validation.
 - `verification.md`: reporting checks honestly, tests, visual checks, real side effects.
-- `git.md`: branches, secrets, staging, commits, commit messages, worktrees.
+- `git.md`: uncommitted changes, branches, secrets, staging, commits, commit messages, worktrees.
 - `docs.md`: keeping docs true, recording decisions and generated files.
 
 ## Checks

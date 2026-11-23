@@ -1,10 +1,11 @@
-Applies to: branches, secrets, staging, committing, commit messages, and worktrees. Commit and push permission is in `autonomy.md`.
+Applies to: starting work in a tree with uncommitted changes, branches, secrets, staging, committing, commit messages, and worktrees. Commit and push permission is in `autonomy.md`.
 
 # Git
 
 - Before starting work, check which branch you are on. Whether to work on the current branch or create a new one depends on the project and the task: follow what `AGENTS.md` and the user say, and ask the user when unsure.
 - Never put secrets (API keys, tokens, passwords, private keys) in code, docs or commits. Read them from environment variables. If you find a secret in a file you are about to commit, stop and tell the user.
-- Stage only the files you changed, with explicit paths (`git add <paths>`, not `git add -A`). Other changes in the tree may be the user's work.
+- Before starting, run `git status`. Changes you did not make are the user's or a teammate's work: never overwrite, revert or stage them. If they clash with the task, ask before going on.
+- Stage only the files you changed, with explicit paths (`git add <paths>`, not `git add -A`). If a file holds both your changes and someone else's, ask the user before staging it.
 - Each commit is one coherent step that passes the checks in `AGENTS.md`. Keep a change, its tests and its docs in the same commit.
 - Add no AI attribution: no `Co-Authored-By` line and no 'Generated with' line.
 

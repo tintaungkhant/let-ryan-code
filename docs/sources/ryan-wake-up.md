@@ -19,6 +19,8 @@ Where each rule in `ryan-wake-up` comes from. Kept out of the skill folder so it
 | Subagents: model by complexity, ambiguity and expected retries (small for mechanical work, mid for judgment), ask before the top model, move up a model after a failure instead of rerunning; full precise brief from main agent; delegate only when it saves tokens; main agent verifies all subagent work cheaply (checks, diff --stat, done-checks; no full re-read) | User (2026-11-23), user feedback on retry cost (2026-11-23) |
 | No subagents, run delegated steps inline (no) | `Project A/.ai/rules/agent-workflow.md`; `Project E/CLAUDE.md` |
 | `.env` read yes/no; on no, work from `.env.example` and code usage | User (2026-11-23) |
+| Writing a migration is ordinary; running destructive ones, changing real data or irreversible infra needs approval; state impact and recovery; a backup alone is not safety | Principal-engineer review (2026-11-23), approved by user |
+| Subagent check: targeted read of security, money, concurrency and data-integrity changes | Principal-engineer review (2026-11-23), approved by user |
 
 ## templates/rules/engineering.md
 
@@ -35,6 +37,8 @@ Where each rule in `ryan-wake-up` comes from. Kept out of the skill folder so it
 | Framework → dependencies → package; say why when hand-rolling | `Project D`, `Project A`, `Project B` engineering rules; `Project E`, `Project C`, `Project B2` |
 | Read installed docs; trust repo docs and `git log` over memory | Next.js `nextjs-agent-rules` block (10 projects); `Project J/CLAUDE.md`; `Project F/AGENTS.md`; `Project D` engineering.md |
 | Use the framework generator | `Project C backend/CLAUDE.md`; `Project I CMS/CLAUDE.md` |
+| Report unrelated problems instead of fixing them | Principal-engineer review (2026-11-23), approved by user |
+| Keep public contracts; find consumers; ask before a breaking change | Principal-engineer review (2026-11-23), approved by user |
 | Server-side validation; endpoints are public; no client-derived values | `Project A/.ai/rules/server-actions.md`; `Project B/.ai/rules/server-actions.md`; `Project I CMS/CLAUDE.md`; `Project C backend/CLAUDE.md` |
 
 ## templates/rules/verification.md
@@ -61,6 +65,7 @@ Where each rule in `ryan-wake-up` comes from. Kept out of the skill folder so it
 | Ticket ID at the end of the commit title | User (2026-11-23), approved suggestion |
 | No secrets in code, docs or commits | User (2026-11-23), approved suggestion |
 | Worktrees only under `.worktree/` in the project, gitignored, removed after merge | User (2026-11-23) |
+| `git status` first; never overwrite, revert or stage others' changes; ask on a clash or a mixed file | Principal-engineer review (2026-11-23), approved by user |
 
 ## templates/rules/docs.md
 

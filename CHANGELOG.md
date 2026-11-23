@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- `ryan-wake-up` rules: approval to run destructive migrations or change real data (writing them stays ordinary); keep public contracts and ask before breaking ones; report unrelated problems instead of fixing them; `git status` first and never touch others' uncommitted changes.
+- Subagents: model picked by complexity, ambiguity and expected retries; move up a model after a failure; targeted read of security, money, concurrency and data-integrity changes.
+- `ryan-plan`: a ticket can take several commits; one commit never holds two tickets.
+
 ## 0.1.0 (2026-11-23)
 
 - `ryan-wake-up`: project agent-file setup (`AGENTS.md`, `CLAUDE.md`, `.ai/rules/`, `docs/`) from setup questions; re-run and deploy-only modes.

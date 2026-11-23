@@ -95,6 +95,7 @@ Fill the placeholders:
     - "Write the brief yourself, start to end, so the subagent needs as little judgment as possible; the smaller the model, the less the brief may leave open: goal and why, exact paths, decisions already made, exact steps, scope and non-goals, read-only or edit, and the checks that prove done. Include only the rules this job needs."
     - "Give parallel agents separate files. Require a handoff: changes, paths, checks run, open questions."
     - "When all subagents are done, verify their work yourself before you report or commit. A subagent's report is not proof. Verify cheaply; this is not a code review, and re-reading all their code spends the tokens twice: run the checks in `AGENTS.md` on the combined result, confirm with `git diff --stat` that only the briefed files changed, and confirm each brief's done-checks. Read code only where a check fails or a file is outside the brief. Fix or redo what is wrong."
+    - "For security, money, concurrency or data-integrity code, also read the changed parts that handle it and check their assumptions. Routine changes need only the checks above."
   - no: "Do all work yourself. Run steps that a skill would delegate to subagents inline instead."
 - `{{test_style_rule}}`:
   - TDD: "Write the smallest test for the change first and see it fail for the intended reason, then make it pass. For a bug, reproduce it with a test first. If that is not feasible, say so instead of claiming a failing step occurred."
