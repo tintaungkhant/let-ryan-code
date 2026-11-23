@@ -1,2 +1,5 @@
+interface:
+  display_name: "Ryan: let's talk"
+  short_description: "Discuss an idea, no spec"
 policy:
   allow_implicit_invocation: false

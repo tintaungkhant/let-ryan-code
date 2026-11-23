@@ -1,2 +1,5 @@
+interface:
+  display_name: "Ryan: rethink"
+  short_description: "Change the setup answers"
 policy:
   allow_implicit_invocation: false

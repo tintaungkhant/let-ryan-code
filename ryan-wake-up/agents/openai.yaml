@@ -1,2 +1,5 @@
+interface:
+  display_name: "Ryan: wake up"
+  short_description: "Set up this project's agent files"
 policy:
   allow_implicit_invocation: false

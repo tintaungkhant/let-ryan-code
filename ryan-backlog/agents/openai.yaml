@@ -1,2 +1,5 @@
+interface:
+  display_name: "Ryan: backlog"
+  short_description: "Show the parked ideas"
 policy:
   allow_implicit_invocation: false
