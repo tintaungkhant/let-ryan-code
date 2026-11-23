@@ -1,0 +1,1 @@
+- CSV import for contacts — came up while building the contacts list page; user wants it later, not now (2026-11-23)
