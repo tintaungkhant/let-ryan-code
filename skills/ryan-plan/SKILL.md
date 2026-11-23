@@ -117,7 +117,7 @@ Red flags: stop and correct course when you catch yourself thinking any of these
 | Thought | Instead |
 |---|---|
 | "This is small, I don't need the rules." | Read them anyway; they hold this project's style and limits. |
-| "I'll do the next ticket in the same commit." | One ticket, one commit. Finish this one first. |
+| "I'll do the next ticket in the same commit." | Finish and commit this ticket first. A ticket can take several commits; one commit never holds two tickets. |
 | "The checks probably pass." | Run them and read the output. |
 | "This box is close enough." | Leave it unticked and say what is missing. |
 | "The plan is outdated, I'll just do what makes sense." | Rewrite the ticket's scope first, then do it. |
