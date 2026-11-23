@@ -10,6 +10,6 @@ Run each scenario in a throwaway project (a small app in its own git repo). Then
 | 4 | `ryan-remember CSV import for contacts` | Project from #1 | One backlog line with context and date; no questions |
 | 5 | `ryan-plan` "plan contact tags" | Project from #1 | At most 10 questions, each with a recommended answer; asks about missing pieces instead of assuming them; linear ticket chain saved after confirmation; confirmed answers in "Decisions" |
 | 6 | `ryan-ship`, answer "we deploy" | Project from #1 | Deploy section in `AGENTS.md`, `.ai/deployment.md`, `.ai/credentials.md`; `credentials.md` gitignored |
-| 7 | `ryan-next` | Project from #5 | Ticket 01 picked; checks from `AGENTS.md` run before boxes are ticked; ticket marked done with the commit |
+| 7 | `ryan-next` | Project from #5 | Ticket 01 picked; checks from `AGENTS.md` run before boxes are ticked; done with the commit only when every box is verified, otherwise left open with the reason |
 
-Scenarios 1 to 5 passed on 2026-11-23 in Claude Code. Scenarios 6 and 7, and all scenarios in Codex, OpenCode and Antigravity, are not run yet.
+All 7 scenarios passed on 2026-11-23 in Claude Code, run by an agent with preset answers. Codex, OpenCode and Antigravity are not run yet.
