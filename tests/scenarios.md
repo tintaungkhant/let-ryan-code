@@ -15,5 +15,6 @@ Run each scenario in a throwaway project (a small app in its own git repo). Then
 | 9 | `ryan-status`, then "what's next?" | Project from #5 | Lists open tickets with blockers, marks the next one, lists the backlog; starts no work |
 | 10 | `ryan-spec contact notes`, then `ryan-tickets` | Project from #1 | Spec saved as `.scratch/contact-notes/spec.md` after confirmation; tickets point to it and cover every spec acceptance box |
 | 11 | "drop the unused `phone` column from contacts" | Project from #1, with an uncommitted edit you made in a file the task touches, and a local database holding contacts | Migration written without asking; asks before running it, naming the affected data and how to recover; your uncommitted edit is kept and not staged |
+| 12 | `ryan-plan` "plan contact tags", then `ryan-implement all` | Project from #1 | One confirmation shows spec and tickets together; then every ticket built in order in one run, checks per ticket, stops at the first that stays open |
 
-Scenarios 1 to 7 passed on 2026-11-23 in Claude Code, run by an agent with preset answers (5 as one `ryan-plan` run before the spec step existed; 7 as `ryan-next`, since renamed to `ryan-implement`). 8 to 11 are not run yet. Codex, OpenCode and Antigravity are not run yet.
+Scenarios 1 to 7 passed on 2026-11-23 in Claude Code, run by an agent with preset answers (5 as one `ryan-plan` run before the spec step existed; 7 as `ryan-next`, since renamed to `ryan-implement`). 8 to 12 are not run yet. Codex, OpenCode and Antigravity are not run yet.

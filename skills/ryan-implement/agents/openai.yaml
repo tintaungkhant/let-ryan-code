@@ -1,5 +1,5 @@
 interface:
   display_name: "Ryan: implement"
-  short_description: "Implement a ticket, or the next one"
+  short_description: "Implement a ticket, the next one, or all"
 policy:
   allow_implicit_invocation: false

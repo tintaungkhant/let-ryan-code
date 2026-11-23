@@ -103,21 +103,22 @@ Bad: "Acceptance: tags work well and the UI looks nice." Nothing in it can be ch
 
 ## Plan
 
-Run **spec**, then **tickets**, in one go.
+Run **spec** and **tickets** with one confirmation instead of two. Grill as in **spec**. Then write the spec, split it into tickets, and show both together. When the user confirms, save the spec and the tickets, and add the decisions to "Decisions" in `AGENTS.md`. If they ask for changes, make them and show both again. Done when the spec and every ticket are in the store.
 
 ## Implement
 
-1. Pick the ticket. If the user named one (`02`, `#12`, `contact-tags/02`), take it; if the name matches more than one ticket, ask which. If its blocker is still open, say so and ask before starting. If the user named none, take the lowest-numbered open ticket whose blocker is closed. Work on one ticket at a time.
+1. Pick the ticket. If the user named one (`02`, `#12`, `contact-tags/02`), take it; if the name matches more than one ticket, ask which. If its blocker is not done yet, say so and ask before starting. If the user named none, take the lowest-numbered open ticket whose blocker is done. If the user wrote `all`, do every open ticket in order in this one run: steps 2 to 5 for each (read the rules once), then the next ticket whose blocker is done. Stop at the first ticket that stays open or needs the user's answer, and report which tickets are done. Work on one ticket at a time.
 2. Before writing code, read the project's rules and follow them for the whole ticket: `.ai/rules/engineering.md` (how to build), `verification.md` (tests and honest checks), `git.md` (commits) and `autonomy.md` (what needs asking, and whether and how to use subagents). If the project has no `.ai/rules/`, follow `AGENTS.md`.
 3. If the ticket's plan conflicts with a newer decision, rewrite the ticket's scope first. Do not leave the old plan in place.
-4. When the work is done, run the commands under "Checks" in `AGENTS.md` and read their output. Then tick only the acceptance boxes you verified; a box that names a command counts as verified only when that command ran and passed. Then mark the ticket done, and point to the commit or PR. If committing needs the user's OK (`autonomy.md`), ask for it first; the ticket is done once the commit exists. Local: set `Status: done` and add a `Done in: <commit or PR>` line. GitHub: close it with a comment. Done when the ticket is marked done and every box is ticked; if a box cannot be ticked, the ticket stays open and you tell the user why.
+4. When the work is done, run the commands under "Checks" in `AGENTS.md` and read their output. Then tick only the acceptance boxes you verified; a box that names a command counts as verified only when that command ran and passed. If a box cannot be ticked, the ticket stays open and you tell the user why.
+5. Once every box is ticked, commit if `autonomy.md` allows it, asking first when it says to. Then mark the ticket done. Local: set `Status: done` and add `Done in: <commit or PR>`. GitHub: close it with a comment naming the commit or PR. If the commit cannot be made now (not approved, or git refuses), still mark the ticket done with `Done in: not committed yet`, and tell the user once; the next ticket may build on it. Done when the ticket is marked done.
 
 Red flags: stop and correct course when you catch yourself thinking any of these.
 
 | Thought | Instead |
 |---|---|
 | "This is small, I don't need the rules." | Read them anyway; they hold this project's style and limits. |
-| "I'll do the next ticket in the same commit." | Finish and commit this ticket first. A ticket can take several commits; one commit never holds two tickets. |
+| "I'll do the next ticket in the same commit." | Finish and commit this ticket first. A ticket can take several commits; one commit never holds two tickets, unless the user commits them later by hand. |
 | "The checks probably pass." | Run them and read the output. |
 | "This box is close enough." | Leave it unticked and say what is missing. |
 | "The plan is outdated, I'll just do what makes sense." | Rewrite the ticket's scope first, then do it. |
@@ -132,7 +133,7 @@ To start a backlog item later, run **plan** on it and remove it from the backlog
 
 Show where things stand, and start nothing.
 
-1. Open tickets, grouped by feature, one line each: number, title, and what blocks it. Mark the next one (the lowest-numbered open ticket whose blocker is closed) with `next:`.
+1. Open tickets, grouped by feature, one line each: number, title, and what blocks it. Mark the next one (the lowest-numbered open ticket whose blocker is done) with `next:`. Flag done tickets whose `Done in:` says not committed yet.
 2. Backlog items, one line each: title and context.
 
 If the user asked only about tickets or only about the backlog, show only that part. Then stop; to start the next ticket, the user runs `ryan-implement`.

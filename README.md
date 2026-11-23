@@ -9,7 +9,7 @@ Talk to Ryan, your coding agent. One set of agent rules and a small planner for 
 /ryan-wake-up     set this project up
 /ryan-spec        a few questions, then a one-screen spec
 /ryan-tickets     split the spec into tickets
-/ryan-implement   build the next ticket (or /ryan-implement 02)
+/ryan-implement   build the next ticket (or 02, or all)
 /ryan-status      what's next
 /ryan-talk        just discuss, no spec
 ```
@@ -61,8 +61,8 @@ Ryan reads the project, asks about a dozen setup questions, and writes the agent
 | `ryan-ship` | Sets up deploys: who deploys, `.ai/deployment.md`, `.ai/credentials.md`. Run it once the app is ready to ship. |
 | `ryan-spec` | Asks a few questions (about 10 at most, each with a recommended answer), then writes a one-screen spec. |
 | `ryan-tickets` | Splits the spec into a chain of tickets, each one committable on its own. |
-| `ryan-plan` | Spec, then tickets, in one go. Also starts on its own when you ask to plan. |
-| `ryan-implement` | Implements a ticket: `ryan-implement 02`, `ryan-implement #12`, or just `ryan-implement` for the next open one. Follows the project rules, runs the checks, ticks only what it verified. |
+| `ryan-plan` | Spec and tickets with one confirmation. Also starts on its own when you ask to plan. |
+| `ryan-implement` | Implements a ticket: `ryan-implement 02`, `ryan-implement #12`, `ryan-implement all` for every open ticket in one run, or just `ryan-implement` for the next open one. Follows the project rules, runs the checks, ticks only what it verified. |
 | `ryan-remember` | Parks an idea in the backlog, e.g. `ryan-remember CSV import for contacts`. |
 | `ryan-status` | Shows where things stand: open tickets, which one is next, and the backlog. Starts nothing. |
 | `ryan-talk` | Discusses an idea or a what-if. No spec, no tickets, no files. |

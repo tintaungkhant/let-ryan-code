@@ -4,7 +4,8 @@
 
 - `ryan-wake-up` rules: approval to run destructive migrations or change real data (writing them stays ordinary); keep public contracts and ask before breaking ones; report unrelated problems instead of fixing them; `git status` first and never touch others' uncommitted changes.
 - Subagents: model picked by complexity, ambiguity and expected retries; move up a model after a failure; targeted read of security, money, concurrency and data-integrity changes.
-- `ryan-plan`: a ticket can take several commits; one commit never holds two tickets.
+- `ryan-plan`: a ticket can take several commits; one commit never holds two tickets. A verified ticket is done even when it cannot be committed yet, so the next ticket is not blocked.
+- `ryan-plan`: one confirmation for spec and tickets together; `ryan-implement all` builds every open ticket in one run.
 
 ## 0.1.0 (2026-11-23)
 
