@@ -13,7 +13,7 @@ Talk to Ryan, your coding agent. Works in Claude Code, Codex, OpenCode and Antig
 | `ryan-backlog` | Shows the backlog. |
 | `ryan-talk` | Discusses an idea or a what-if. No spec, no tickets, no files. |
 
-All commands except `ryan-plan` run only when you call them.
+All commands except `ryan-plan` run only when you call them. Install every `ryan-*` folder together: the small commands run flows inside `ryan-wake-up` and `ryan-plan`.
 
 ## Install
 
@@ -76,3 +76,18 @@ OpenCode reads both `~/.agents/skills/` and `~/.claude/skills/`, so it may list 
 ## Project files
 
 The files `ryan-wake-up` writes work in all four tools: Codex, OpenCode and Antigravity read `AGENTS.md` directly; Claude Code reads `CLAUDE.md`, which imports it (`@AGENTS.md`).
+
+## Repo layout
+
+```
+ryan-*/            one folder per skill (SKILL.md, agents/openai.yaml, templates/)
+tests/             validate.mjs and the manual test scenarios
+docs/sources/      where each rule comes from (not shipped to agents)
+CHANGELOG.md, LICENSE
+```
+
+## Tests
+
+`node tests/validate.mjs` checks every skill: frontmatter parses, names match folders, user-only settings for each tool, links between skills, and every template placeholder has a fill rule. Add `--project <dir>` to also check a project that `ryan-wake-up` set up. Manual scenarios are in `tests/scenarios.md`.
+
+When you add a `ryan-*` skill, add it to the command table above; the validator fails otherwise.
