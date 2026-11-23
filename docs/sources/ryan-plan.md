@@ -11,7 +11,7 @@ Where each rule in `ryan-plan` comes from. Kept out of the skill folder so it ne
 | GitHub issues as tickets; comment pointing to the PR | `Project B/.ai/rules/agent-workflow.md`, docs-sync.md |
 | Grill one question at a time, with a recommended answer; look before asking | mattpocock `grilling` skill (named by the user as the model in W7) |
 | Aim for at most 10 questions; more only when needed | User (W7) |
-| Linear ticket chain; lowest open ticket whose blocker is closed; one at a time | `Project B/.ai/rules/agent-workflow.md` |
+| Linear ticket chain; lowest open ticket whose blocker is done; one at a time | `Project B/.ai/rules/agent-workflow.md` |
 | A ticket is a committable step that passes checks | `Project A`, `Project B` agent-workflow.md ("chunk") |
 | Confirm the ticket list before creating | User (W5: ask before important actions) |
 | Rewrite ticket scope on conflict | `Project A`, `Project B` docs-sync.md |
@@ -20,3 +20,6 @@ Where each rule in `ryan-plan` comes from. Kept out of the skill folder so it ne
 | Park: no grill, title + context, return to work; show backlog | User (W7) |
 | Discussing is not planning: answer "what if" in chat, no spec; at the end ask park / plan / decision / nothing | User (2026-11-23) |
 | Plan missing prerequisites first or stop; only confirmed answers become decisions | Test run on sample app (2026-11-23) |
+| A ticket can take several commits; one commit never holds two tickets | User (2026-11-23) |
+| A verified ticket is done even when it cannot be committed yet (`Done in: not committed yet`) | Benchmark in Codex (2026-11-23): the ticket chain stalled for 5 calls waiting for a commit |
+| `plan` shows spec and tickets in one confirmation; `ryan-implement all` builds every open ticket in one run | Benchmark in Codex (2026-11-24): the own flow fell from 441k to 136k fresh tokens; see `bench/results/` |
