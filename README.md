@@ -21,7 +21,7 @@ Coding agents out of the box:
 - **write a spec when you only asked "what if…?"** Ryan answers in chat, then asks once: park it, plan it, record a decision, or nothing.
 - **ask permission for everything, or for nothing.** Ryan asks you once at setup: for installs, commits, pushes, deploys and paid runs, answer *yes*, *no* or *flexible*.
 - **say "done" without proof.** Ryan reports only checks it ran, never weakens a failing test, and leaves a ticket open when a box is not verified.
-- **burn tokens.** Rules load only when a task touches them, subagents get a cheap model and a precise brief, and a 30-question grill becomes about 10.
+- **burn tokens.** Rules load only when a task touches them, subagents get the model that gets the job right the first time (not just the cheapest) and a precise brief, and a 30-question grill becomes about 10.
 - **leave a mess.** No background dev servers, no detached containers, worktrees only inside the project, a backup before any risky change.
 
 Every rule traces to a real project or a decision; see [docs/sources](docs/sources).

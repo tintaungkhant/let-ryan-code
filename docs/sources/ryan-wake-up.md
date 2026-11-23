@@ -16,7 +16,7 @@ Where each rule in `ryan-wake-up` comes from. Kept out of the skill folder so it
 | Save tokens | `Project B2/.ai/rules/workflow.md`; user (W3) |
 | Disagreeing with the user | `Project F/AGENTS.md` "How to disagree"; `Project D/.ai/rules/engineering.md` "Collaboration and pushback" |
 | Subagent brief (yes) | `Project D/.ai/rules/engineering.md` "Subagent delegation"; `Project B/.ai/rules/agent-workflow.md` |
-| Subagents: cheapest model, ask before an expensive one; full precise brief from main agent; delegate only when it saves tokens; main agent verifies all subagent work cheaply (checks, diff --stat, done-checks; no full re-read) | User (2026-11-23) |
+| Subagents: model by complexity, ambiguity and expected retries (small for mechanical work, mid for judgment), ask before the top model, move up a model after a failure instead of rerunning; full precise brief from main agent; delegate only when it saves tokens; main agent verifies all subagent work cheaply (checks, diff --stat, done-checks; no full re-read) | User (2026-11-23), user feedback on retry cost (2026-11-23) |
 | No subagents, run delegated steps inline (no) | `Project A/.ai/rules/agent-workflow.md`; `Project E/CLAUDE.md` |
 | `.env` read yes/no; on no, work from `.env.example` and code usage | User (2026-11-23) |
 
