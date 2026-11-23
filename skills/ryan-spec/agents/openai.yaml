@@ -1,0 +1,5 @@
+interface:
+  display_name: "Ryan: write the spec"
+  short_description: "Questions, then a one-screen spec"
+policy:
+  allow_implicit_invocation: false

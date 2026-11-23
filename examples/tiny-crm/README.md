@@ -8,6 +8,6 @@ Real output from let-ryan-code on a tiny Next.js CRM (a `package.json` with `typ
 | 2 | `ryan-ship` ("we deploy", Vercel) | Deploy section in `AGENTS.md`, `.ai/deployment.md` (and a gitignored `.ai/credentials.md`, not included here) |
 | 3 | `ryan-remember CSV import for contacts` | `.scratch/backlog.md` |
 | 4 | `ryan-plan` "plan contact tags" | `.scratch/contact-tags/01..03`, four lines in `AGENTS.md` "Decisions" |
-| 5 | `ryan-do` (no number, so the next ticket) | Worked ticket 01; left it open because the checks could not run without `node_modules` |
+| 5 | `ryan-implement` (no number, so the next ticket) | Worked ticket 01; left it open because the checks could not run without `node_modules` |
 
-The setup answers are in `.ai/setup-answers.md`.
+The setup answers are in `.ai/setup-answers.md`. This example was made before `ryan-spec` existed, so it has tickets but no `spec.md`.

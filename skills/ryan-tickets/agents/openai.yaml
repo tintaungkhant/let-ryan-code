@@ -1,0 +1,5 @@
+interface:
+  display_name: "Ryan: make the tickets"
+  short_description: "Split a spec into tickets"
+policy:
+  allow_implicit_invocation: false

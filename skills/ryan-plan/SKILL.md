@@ -1,13 +1,13 @@
 ---
 name: ryan-plan
-description: Small planner for tickets and backlog. Use when the user asks to plan or break down a feature into tickets, asks what is next or where things stand ("show tickets", "show the backlog"), asks to do a ticket, or wants to park an idea for later ("note this", "do it later", "add to backlog"). A discussion or "what if" question is answered in chat; use this skill only once the user chooses to plan or park it.
+description: Small planner for specs, tickets and backlog. Use when the user asks to plan a feature, write a spec, or break a feature into tickets; asks what is next or where things stand ("show tickets", "show the backlog"); asks to implement a ticket; or wants to park an idea for later ("note this", "do it later", "add to backlog"). A discussion or "what if" question is answered in chat; use this skill only once the user chooses to plan or park it.
 ---
 
 # Ryan, let's plan
 
-Four flows: **plan**, **do a ticket**, **park**, **show status**. Pick the one the user's request matches.
+Flows: **spec**, **tickets**, **plan** (spec, then tickets), **implement**, **park**, **show status**. Pick the one the user's request matches.
 
-Run a flow only when the user asks for it. "What's next?" is **show status**; start a ticket only when the user asks to do it. A discussion or a "what if" question gets an answer in chat, not a spec or tickets. At the end of a discussion, ask once: park it, plan it, record a decision, or nothing.
+Run a flow only when the user asks for it. "What's next?" is **show status**; start a ticket only when the user asks to implement it. A discussion or a "what if" question gets an answer in chat, not a spec or tickets. At the end of a discussion, ask once: park it, plan it, record a decision, or nothing.
 
 ## Store
 
@@ -15,16 +15,41 @@ Run a flow only when the user asks for it. "What's next?" is **show status**; st
 
 **Local** (`.scratch/`):
 
+- Spec: `.scratch/<feature-slug>/spec.md`, using the spec format below.
 - Ticket: `.scratch/<feature-slug>/NN-<ticket-slug>.md`, using the ticket format below.
 - Backlog: `.scratch/backlog.md`, one item per line: `- <title> — <one line of context> (<YYYY-MM-DD>)`.
 
 **GitHub** (`gh`):
 
-- Ticket: `gh issue create --title "<title>" --body "<ticket body>"`. Put `Blocked by: #N` in the body.
+- Spec: `gh issue create --label spec --title "Spec: <feature>" --body "<spec body>"` (`gh label create spec` once, if missing).
+- Ticket: `gh issue create --title "<title>" --body "<ticket body>"`. Put `Spec: #N` and `Blocked by: #N` in the body.
 - Backlog: `gh issue create --label backlog ...` (`gh label create backlog` once, if missing). List it with `gh issue list --label backlog`.
 - Done: tick the boxes with `gh issue edit`, then `gh issue close <N> --comment "<what was done, with the commit or PR>"`.
 
 **Other tool**: use the create, list and close commands recorded in `AGENTS.md`.
+
+## Spec format
+
+```markdown
+# <feature>
+
+## Goal
+<the problem it solves and for whom, two or three sentences>
+
+## Decisions
+- <each answer the user confirmed during the grill>
+
+## Scope
+- <what this feature includes>
+
+## Out of scope
+- <what it deliberately leaves out>
+
+## Acceptance
+- [ ] <checkable outcome for the whole feature>
+```
+
+Keep a spec to one screen. It says what and why; the tickets say in which steps.
 
 ## Ticket format
 
@@ -32,6 +57,7 @@ Run a flow only when the user asks for it. "What's next?" is **show status**; st
 # NN <title>
 
 Status: open
+Spec: <spec path or #N>
 Blocked by: <NN or none>
 
 ## Goal
@@ -49,6 +75,7 @@ Good:
 # 02 Add and remove tags on a contact
 
 Status: open
+Spec: .scratch/contact-tags/spec.md
 Blocked by: 01
 
 ## Goal
@@ -62,13 +89,23 @@ A user can add a tag to a contact and remove it from the contact page.
 
 Bad: "Acceptance: tags work well and the UI looks nice." Nothing in it can be checked.
 
+## Spec
+
+1. **Grill.** Ask questions one at a time, each with your recommended answer. Example: "Should a tag be shared across contacts, or free text on each contact? I recommend shared, so the list can filter by it." Skip anything the code, the docs or `AGENTS.md` "Decisions" already answer: look first. Aim for at most 10 questions; ask more only when a real gap remains. If the feature needs something that does not exist yet (a table, a page, a service), ask whether to plan it first as the opening tickets or to stop; never plan on top of something assumed to exist. Done when you can write the spec without guessing.
+2. **Write.** Write the spec in the spec format and show it to the user. Done when the user confirms it; if they ask for changes, make them and show it again.
+3. **Save.** Save the spec in the store. Add its decisions to "Decisions" in `AGENTS.md`. Done when the spec is in the store.
+
+## Tickets
+
+1. **Read the spec.** Find the feature's spec in the store. If there is none, ask whether to write one first (**spec**) or to split straight from the user's description; for a small feature the description can be enough.
+2. **Split.** Write the feature as a linear chain of tickets: each ticket blocked by the one before it, unless it is independent. Every spec acceptance box must be covered by some ticket. Show the list (titles, goals, blockers) to the user. Done when the user confirms the list; if they ask for changes, make them and show the list again.
+3. **Save.** Create the confirmed tickets in the store, each pointing to the spec. Done when listing the store shows every confirmed ticket.
+
 ## Plan
 
-1. **Grill.** Ask questions one at a time, each with your recommended answer. Example: "Should a tag be shared across contacts, or free text on each contact? I recommend shared, so the list can filter by it." Skip anything the code, the docs or `AGENTS.md` "Decisions" already answer: look first. Aim for at most 10 questions; ask more only when a real gap remains. If the feature needs something that does not exist yet (a table, a page, a service), ask whether to plan it first as the opening tickets or to stop; never plan on top of something assumed to exist. Done when you can write every ticket's goal and acceptance boxes without guessing.
-2. **Split.** Write the feature as a linear chain of tickets: each ticket blocked by the one before it, unless it is independent. Show the list (titles, goals, blockers) to the user. Done when the user confirms the list; if they ask for changes, make them and show the list again.
-3. **Save.** Create the confirmed tickets in the store. Add the answers the user confirmed during the grill to "Decisions" in `AGENTS.md`. Done when listing the store shows every confirmed ticket.
+Run **spec**, then **tickets**, in one go.
 
-## Do a ticket
+## Implement
 
 1. Pick the ticket. If the user named one (`02`, `#12`, `contact-tags/02`), take it; if the name matches more than one ticket, ask which. If its blocker is still open, say so and ask before starting. If the user named none, take the lowest-numbered open ticket whose blocker is closed. Work on one ticket at a time.
 2. Before writing code, read the project's rules and follow them for the whole ticket: `.ai/rules/engineering.md` (how to build), `verification.md` (tests and honest checks), `git.md` (commits) and `autonomy.md` (what needs asking, and whether and how to use subagents). If the project has no `.ai/rules/`, follow `AGENTS.md`.
@@ -89,7 +126,7 @@ Red flags: stop and correct course when you catch yourself thinking any of these
 
 The user wants to note something for later while working on something else, or chose "park it" after a discussion. Do not grill. Save one backlog item: a title, one line of context (what work or discussion it came up in, and what the discussion concluded), and the date or label. Confirm in one line, then return to the current work. Done when the item is in the backlog.
 
-To start a backlog item later, run **Plan** on it and remove it from the backlog.
+To start a backlog item later, run **plan** on it and remove it from the backlog.
 
 ## Show status
 
@@ -98,4 +135,4 @@ Show where things stand, and start nothing.
 1. Open tickets, grouped by feature, one line each: number, title, and what blocks it. Mark the next one (the lowest-numbered open ticket whose blocker is closed) with `next:`.
 2. Backlog items, one line each: title and context.
 
-If the user asked only about tickets or only about the backlog, show only that part. Then stop; to start the next ticket, the user runs `ryan-do`.
+If the user asked only about tickets or only about the backlog, show only that part. Then stop; to start the next ticket, the user runs `ryan-implement`.

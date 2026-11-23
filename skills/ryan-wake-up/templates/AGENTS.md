@@ -20,7 +20,7 @@ These must pass before a commit:
 
 ## Planner
 
-Tickets and backlog live in: {{planner_store}}. Planner skills: `ryan-plan` (plan a feature), `ryan-do` (implement a ticket, or the next one), `ryan-remember` (park an idea), `ryan-status` (open tickets, the next one, and the backlog), `ryan-talk` (discuss only).
+Tickets and backlog live in: {{planner_store}}. Planner skills: `ryan-spec` (write a spec), `ryan-tickets` (split it into tickets), `ryan-plan` (both in one go), `ryan-implement` (implement a ticket, or the next one), `ryan-remember` (park an idea), `ryan-status` (open tickets, the next one, and the backlog), `ryan-talk` (discuss only).
 
 Discussing is not planning. When the user explores an idea or asks "what if" (for example "what if we move from a VPS to k8s?"), answer and discuss only: no spec, ticket, plan or file. When the discussion ends, ask once in one line what to do with it: park it in the backlog, plan it now, record a settled decision in "Decisions", or nothing. "Nothing" is a normal answer.
 

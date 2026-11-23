@@ -1,4 +1,4 @@
-﻿# let-ryan-code
+# let-ryan-code
 
 [![validate](https://github.com/tintaungkhant/let-ryan-code/actions/workflows/validate.yml/badge.svg)](https://github.com/tintaungkhant/let-ryan-code/actions/workflows/validate.yml)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -7,8 +7,10 @@ Talk to Ryan, your coding agent. One set of agent rules and a small planner for 
 
 ```
 /ryan-wake-up     set this project up
-/ryan-plan        plan a feature into tickets
-/ryan-do 02       implement ticket 02 (or the next one)
+/ryan-spec        a few questions, then a one-screen spec
+/ryan-tickets     split the spec into tickets
+/ryan-implement   build the next ticket (or /ryan-implement 02)
+/ryan-status      what's next
 /ryan-talk        just discuss, no spec
 ```
 
@@ -57,8 +59,10 @@ Ryan reads the project, asks about a dozen setup questions, and writes the agent
 | `ryan-wake-up` | Sets up the project's agent files (`AGENTS.md`, `CLAUDE.md`, `.ai/rules/`, `docs/`) by asking setup questions. |
 | `ryan-rethink` | Changes the setup answers; asks only what you want to change and keeps your own edits. |
 | `ryan-ship` | Sets up deploys: who deploys, `.ai/deployment.md`, `.ai/credentials.md`. Run it once the app is ready to ship. |
-| `ryan-plan` | Plans a feature: a few questions, then a chain of tickets. Also starts on its own when you ask to plan. |
-| `ryan-do` | Implements a ticket: `ryan-do 02`, `ryan-do #12`, or just `ryan-do` for the next open one. Runs the checks and ticks only what it verified. |
+| `ryan-spec` | Asks a few questions (about 10 at most, each with a recommended answer), then writes a one-screen spec. |
+| `ryan-tickets` | Splits the spec into a chain of tickets, each one committable on its own. |
+| `ryan-plan` | Spec, then tickets, in one go. Also starts on its own when you ask to plan. |
+| `ryan-implement` | Implements a ticket: `ryan-implement 02`, `ryan-implement #12`, or just `ryan-implement` for the next open one. Follows the project rules, runs the checks, ticks only what it verified. |
 | `ryan-remember` | Parks an idea in the backlog, e.g. `ryan-remember CSV import for contacts`. |
 | `ryan-status` | Shows where things stand: open tickets, which one is next, and the backlog. Starts nothing. |
 | `ryan-talk` | Discusses an idea or a what-if. No spec, no tickets, no files. |
