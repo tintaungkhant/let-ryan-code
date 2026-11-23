@@ -71,13 +71,15 @@ Bad: "Acceptance: tags work well and the UI looks nice." Nothing in it can be ch
 ## Do a ticket
 
 1. Pick the ticket. If the user named one (`02`, `#12`, `contact-tags/02`), take it; if the name matches more than one ticket, ask which. If its blocker is still open, say so and ask before starting. If the user named none, take the lowest-numbered open ticket whose blocker is closed. Work on one ticket at a time.
-2. If the ticket's plan conflicts with a newer decision, rewrite the ticket's scope first. Do not leave the old plan in place.
-3. When the work is done, run the commands under "Checks" in `AGENTS.md` and read their output. Then tick only the acceptance boxes you verified; a box that names a command counts as verified only when that command ran and passed. Then mark the ticket done, and point to the commit or PR. If committing needs the user's OK (`autonomy.md`), ask for it first; the ticket is done once the commit exists. Local: set `Status: done` and add a `Done in: <commit or PR>` line. GitHub: close it with a comment. Done when the ticket is marked done and every box is ticked; if a box cannot be ticked, the ticket stays open and you tell the user why.
+2. Before writing code, read the project's rules and follow them for the whole ticket: `.ai/rules/engineering.md` (how to build), `verification.md` (tests and honest checks), `git.md` (commits) and `autonomy.md` (what needs asking, and whether and how to use subagents). If the project has no `.ai/rules/`, follow `AGENTS.md`.
+3. If the ticket's plan conflicts with a newer decision, rewrite the ticket's scope first. Do not leave the old plan in place.
+4. When the work is done, run the commands under "Checks" in `AGENTS.md` and read their output. Then tick only the acceptance boxes you verified; a box that names a command counts as verified only when that command ran and passed. Then mark the ticket done, and point to the commit or PR. If committing needs the user's OK (`autonomy.md`), ask for it first; the ticket is done once the commit exists. Local: set `Status: done` and add a `Done in: <commit or PR>` line. GitHub: close it with a comment. Done when the ticket is marked done and every box is ticked; if a box cannot be ticked, the ticket stays open and you tell the user why.
 
 Red flags: stop and correct course when you catch yourself thinking any of these.
 
 | Thought | Instead |
 |---|---|
+| "This is small, I don't need the rules." | Read them anyway; they hold this project's style and limits. |
 | "I'll do the next ticket in the same commit." | One ticket, one commit. Finish this one first. |
 | "The checks probably pass." | Run them and read the output. |
 | "This box is close enough." | Leave it unticked and say what is missing. |
