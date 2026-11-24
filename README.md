@@ -36,9 +36,9 @@ Same tasks, same Codex model, fresh copy of a small app each run, hidden tests r
 | Same feature, plain prompt | 24/24, 59k | 24/24, 52k | 24/24, 50k |
 | Bug fix, refactor, risky migration, what-if (4 tasks) | all checks pass | all checks pass | all checks pass |
 
-Tokens are fresh (uncached) tokens. Correctness and safety tie on these tasks; Ryan's edge is cost on bigger work. On small coding tasks it costs about 6k more for reading its rules and keeping tests and docs current. Full table, method and limits: [bench/results/2026-11-24-codex.md](bench/results/2026-11-24-codex.md).
+Tokens are fresh (uncached) tokens. Correctness and safety tie on these tasks; Ryan's edge is fewer tokens on a planned, multi-ticket feature, not better code. Fresh tokens are not dollars: cached re-reads still cost something. On small coding tasks it costs about 6k more for reading its rules and keeping tests and docs current. Full table, method and limits: [bench/results/2026-11-24-codex.md](bench/results/2026-11-24-codex.md).
 
-In Claude Code (Sonnet, 3 runs each), Ryan's own flow used 64k fresh tokens against Matt's 185k, and Ryan was the only setup that passed every safety check in every run: in one of three Matt runs, the agent ran the migration on the real database without asking. On small tasks Ryan uses 5k to 11k more, mostly because it asks before committing. Details: [bench/results/2026-11-24-claude.md](bench/results/2026-11-24-claude.md).
+In Claude Code (Sonnet, 3 runs each), Ryan's own flow used 64k fresh tokens against Matt's 185k, with the same hidden-test results. Ryan and the no-skills setup passed every safety check in all three runs; in one of three Matt runs, the agent ran the migration on the real database without asking. On small tasks Ryan uses 5k to 11k more, mostly because it asks before committing. Details: [bench/results/2026-11-24-claude.md](bench/results/2026-11-24-claude.md).
 
 ## Quick start
 
