@@ -23,3 +23,4 @@ Where each rule in `ryan-plan` comes from. Kept out of the skill folder so it ne
 | A ticket can take several commits; one commit never holds two tickets | User (2026-11-23) |
 | A verified ticket is done even when it cannot be committed yet (`Done in: not committed yet`) | Benchmark in Codex (2026-11-23): the ticket chain stalled for 5 calls waiting for a commit |
 | `plan` shows spec and tickets in one confirmation; `ryan-implement all` builds every open ticket in one run | Benchmark in Codex (2026-11-24): the own flow fell from 441k to 130k fresh tokens (mean of 3 runs); see `bench/results/` |
+| Tickets left `not committed yet` get one commit each, in order, when the user approves | Benchmark in Claude Code (2026-11-24): Ryan recommended one commit for two tickets |
