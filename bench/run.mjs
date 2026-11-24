@@ -193,7 +193,43 @@ function linkGit(ws, gitDir) {
   writeFileSync(join(ws, ".git"), `gitdir: ${gitDir.replaceAll("\\", "/")}\n`);
 }
 
+// ---------- setup record: every run in one --out folder uses the same versions ----------
+
+// Versions that must match across runs. Tree hashes change only when skills/ or bench/ change, not on other commits.
+function setupInfo() {
+  const repoGit = (args) => run("git", args, repoDir).stdout.trim();
+  return {
+    agent,
+    cli: opts.dry ? "dry" : run(agent, ["--version"], repoDir).stdout.trim(),
+    model: opts.model ?? "default",
+    permissions: agent === "codex" ? "sandbox workspace-write, --ignore-user-config" : `--permission-mode ${opts.permissionMode}, --setting-sources project,local`,
+    ryanSkillsTree: repoGit(["rev-parse", "HEAD:skills"]),
+    benchTree: repoGit(["rev-parse", "HEAD:bench"]),
+    mattCommit: MATT_SHA,
+  };
+}
+
+// Records the setup in <out>/bench.json on first use, then refuses any run with a different one.
+function checkSetup() {
+  if (!opts.dry && run("git", ["status", "--porcelain", "--", "skills", "bench"], repoDir).stdout.trim()) {
+    throw new Error("skills/ or bench/ has uncommitted changes; commit them first so every run matches a recorded version");
+  }
+  const info = setupInfo();
+  const file = join(opts.out, "bench.json");
+  if (!existsSync(file)) {
+    if (allRunDirs().length) throw new Error(`${opts.out} has runs but no bench.json; use a new --out`);
+    writeFileSync(file, JSON.stringify({ ...info, repoCommit: run("git", ["rev-parse", "HEAD"], repoDir).stdout.trim() }, null, 2));
+    return info;
+  }
+  const recorded = JSON.parse(readFileSync(file, "utf8"));
+  const changed = Object.keys(info).filter((key) => recorded[key] !== info[key]);
+  if (changed.length) throw new Error(`changed since ${file}: ${changed.join(", ")}; use a new --out to keep versions apart`);
+  return info;
+}
+
 function prepare() {
+  if (allRunDirs().length) throw new Error(`${opts.out} already has runs; a new setup needs a new --out`);
+  checkSetup();
   for (const arm of opts.arms) {
     const ws = join(opts.out, "_base", arm);
     const gitDir = join(opts.out, "_base", `${arm}.git`);
@@ -234,6 +270,7 @@ function preflight() {
 // ---------- run ----------
 
 function runTasks() {
+  const setup = checkSetup();
   for (const task of tasks.filter((t) => opts.tasks.includes(t.id))) {
     for (const arm of opts.arms) {
       for (const variant of Object.keys(task.steps).filter((v) => v === "plain" || v === arm)) {
@@ -250,7 +287,7 @@ function runTasks() {
           task.prepare?.({ ws, runDir, run });
           const started = Date.now();
           const calls = converse(ws, task.steps[variant], { reply: task.reply, replies: task.replies });
-          writeFileSync(join(runDir, "meta.json"), JSON.stringify({ task: task.id, arm, variant, rep, base, agent, model: opts.model ?? "default", permissionMode: opts.permissionMode, wallMs: Date.now() - started }, null, 2));
+          writeFileSync(join(runDir, "meta.json"), JSON.stringify({ task: task.id, arm, variant, rep, base, ...setup, wallMs: Date.now() - started }, null, 2));
           writeFileSync(join(runDir, "calls.json"), JSON.stringify(calls, null, 2));
           console.log(`ran ${task.id}/${id}: ${tokens(calls)} tokens`);
         }
@@ -328,6 +365,8 @@ function score(runDir) {
 
   const result = {
     task: meta.task, arm: meta.arm, variant: meta.variant, rep: meta.rep,
+    // Claude Code names the exact models it used, subagents included; Codex does not.
+    models: [...new Set(calls.flatMap((call) => Object.keys(call.modelUsage ?? {})))].join(" ") || meta.model,
     ...runUsage(calls), minutes: sum(calls, "duration_ms") / 60000,
     calls: calls.length, questions: calls.filter((call) => asksQuestion(call.result)).length,
     errors: calls.filter((call) => call.is_error).length,

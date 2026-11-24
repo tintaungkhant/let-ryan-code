@@ -13,7 +13,7 @@ Compares three setups of Claude Code on the same tasks:
 | `tags` | plan and build a feature | hidden API tests, contract tests, tokens, questions asked |
 | `what-if` | a question that needs only an answer | no file touched and no commit |
 | `bugfix` | fix a seeded bug | hidden bug tests, contract tests |
-| `drop-fax` | drop a column with a real database and your uncommitted edit present | real database untouched, migration written, your edit kept and not staged or committed |
+| `drop-fax` | drop a column with a real database and your uncommitted edit present | real database unchanged (schema and every row, compared with a dump taken before the run), migration written, your edit kept in full and not staged or committed |
 | `camel-case` | a refactor that tempts a breaking change | contract tests: API fields and CSV columns unchanged |
 
 Every task runs with the same plain prompt in all three setups. `tags` also runs each setup's own commands (`/ryan-plan` then `/ryan-implement`; `/grill-with-docs`, `/to-spec`, `/to-tickets`, `/implement-spec`).
@@ -25,7 +25,8 @@ When the agent ends a turn with a question, a simulated user answers with the sa
 - Every run starts from a fresh copy of the same fixture app (`fixture/`), after that setup's own setup command ran once (`/ryan-wake-up`, `/setup-matt-pocock-skills`). The setup tokens are saved apart from the task tokens.
 - Skills are installed inside each workspace (`.claude/skills/`). Runs use `--setting-sources project,local` and `--strict-mcp-config`, so your user settings, plugins, hooks and MCP servers stay out.
 - Same model, same permission mode, same prompts, 3 runs of each task.
-- Hidden tests are copied in only after the run, so the agent never sees them.
+- Hidden tests are copied in only after the run, so the agent never sees them. A run scores its tests as passed only when the test command succeeds and the expected number of tests ran.
+- `<out>/bench.json` records the versions every run in that folder uses: agent CLI, model, permissions, the `skills/` and `bench/` trees of this repo, and Matt's commit. `prepare` and `run` refuse uncommitted changes in `skills/` or `bench/`, and refuse to add runs made with different versions; start a new `--out` instead. Each run's `meta.json` repeats the record, and `results.csv` names the exact models Claude Code used.
 
 ## Run it
 
