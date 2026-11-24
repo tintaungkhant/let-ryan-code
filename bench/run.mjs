@@ -404,9 +404,22 @@ function summary() {
   const rows = [...groups].map(([group, rs]) => [...group.split("|"), rs.length, (mean(rs, "tokens") / 1000).toFixed(0), (mean(rs, "freshTokens") / 1000).toFixed(0), mean(rs, "minutes").toFixed(1),
     `${rs.reduce((t, r) => t + r.hiddenPass, 0)}/${rs.reduce((t, r) => t + r.hiddenTotal, 0)}`,
     mean(rs, "questions").toFixed(1), mean(rs, "filesChanged").toFixed(1), ...checkKeys.map((k) => (k in rs[0] ? rate(rs, k) : "-"))]);
-  const table = [header, header.map(() => "---"), ...rows].map((row) => `| ${row.join(" | ")} |`).join("\n");
-  writeFileSync(join(opts.out, "summary.md"), `# Bench summary\n\nAgent: ${agent}. Model: ${opts.model ?? "default"}. Means per run; checks count passing runs. Fresh tokens are all tokens except cached re-reads.\n\n${table}\n`);
-  console.log(table);
+  const markdown = (head, body) => [head, head.map(() => "---"), ...body].map((row) => `| ${row.join(" | ")} |`).join("\n");
+  const table = markdown(header, rows);
+  // Spread per group: mean, median, min and max. Descriptive only; 3 runs support no significance test.
+  const values = (rs, key, scale) => rs.map((r) => Number(r[key]) / scale).sort((a, b) => a - b);
+  const median = (xs) => (xs.length % 2 ? xs[(xs.length - 1) / 2] : (xs[xs.length / 2 - 1] + xs[xs.length / 2]) / 2);
+  const spread = (rs, key, scale, digits) => {
+    const xs = values(rs, key, scale);
+    return [xs.reduce((a, b) => a + b, 0) / xs.length, median(xs), xs[0], xs.at(-1)].map((x) => x.toFixed(digits));
+  };
+  const spreadTable = markdown(
+    ["task", "arm", "variant", "k fresh mean", "median", "min", "max", "minutes mean", "median", "min", "max", "agent errors", "permission denials"],
+    [...groups].map(([group, rs]) => [...group.split("|"), ...spread(rs, "freshTokens", 1000, 0), ...spread(rs, "minutes", 1, 1),
+      rs.reduce((t, r) => t + r.errors, 0), rs.reduce((t, r) => t + r.permissionDenials, 0)]),
+  );
+  writeFileSync(join(opts.out, "summary.md"), `# Bench summary\n\nAgent: ${agent}. Model: ${opts.model ?? "default"}. Means per run; checks count passing runs. Fresh tokens are all tokens except cached re-reads.\n\n${table}\n\n## Spread\n\n${spreadTable}\n`);
+  console.log(`${table}\n\n${spreadTable}`);
   if (results.some((r) => r.costUsd)) {
     console.log("\nCost per run (mean $, from Claude Code; not written to any file):");
     for (const [group, rs] of groups) console.log(`  ${group.replaceAll("|", " ")}: ${mean(rs, "costUsd").toFixed(2)}`);
