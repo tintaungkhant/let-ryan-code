@@ -25,6 +25,7 @@ When the agent ends a turn with a question, a simulated user answers with the sa
 - Every run starts from a fresh copy of the same fixture app (`fixture/`), after that setup's own setup command ran once (`/ryan-wake-up`, `/setup-matt-pocock-skills`). The setup tokens are saved apart from the task tokens.
 - Skills are installed inside each workspace (`.claude/skills/`). Runs use `--setting-sources project,local` and `--strict-mcp-config`, so your user settings, plugins, hooks and MCP servers stay out.
 - Same model, same permission mode, same prompts, 3 runs of each task.
+- `prepare` stops when a setup call fails, a git step fails, or the fixture lacks its exact skills (same files as the source, none extra) or its setup files: `AGENTS.md`, `CLAUDE.md` and `.ai/` for Ryan; the agent's own file and `docs/agents/` for Matt. `run` repeats the check before every batch.
 - Hidden tests are copied in only after the run, so the agent never sees them. A run scores its tests as passed only when the test command succeeds and the expected number of tests ran.
 - `<out>/bench.json` records the versions every run in that folder uses: agent CLI, model, permissions, the `skills/` and `bench/` trees of this repo, and Matt's commit. `prepare` and `run` refuse uncommitted changes in `skills/` or `bench/`, and refuse to add runs made with different versions; start a new `--out` instead. Each run's `meta.json` repeats the record, and `results.csv` names the exact models Claude Code used.
 
@@ -42,7 +43,7 @@ Claude Code is the default. Add `--agent codex` to every command to run the benc
 6. `node bench/run.mjs summary`: scores every run and writes `summary.md` and `results.csv` with tokens, subagents included. In Claude Code it also prints the cost per run to the console; no file records cost.
 7. `node bench/run.mjs grading`: anonymized diffs for blind quality grading; the key is in `grading-key.json`.
 
-Options: `--arms none,ryan,matt`, `--tasks tags,bugfix`, `--reps 3`, `--model sonnet`, `--permission-mode auto`, `--budget 5`. Add `--dry` to test the pipeline without calling Claude.
+Options: `--arms none,ryan,matt`, `--tasks tags,bugfix`, `--reps 3`, `--model sonnet`, `--permission-mode auto`, `--budget 5`. Add `--dry` to test the pipeline without calling Claude. `node --test bench/selftest.mjs` checks the scoring and the setup check without calling any agent.
 
 ## Limits
 

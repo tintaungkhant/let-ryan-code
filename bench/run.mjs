@@ -48,6 +48,12 @@ function run(cmd, args, cwd, input, env = process.env) {
   return result;
 }
 const gitIn = (ws) => (args) => run("git", args, ws).stdout;
+// For steps that must work (setting up fixtures and workspaces): stops the bench on a non-zero exit.
+function must(cmd, args, cwd) {
+  const { stdout, stderr, status } = run(cmd, args, cwd);
+  if (status !== 0) throw new Error(`${cmd} ${args.join(" ")} failed in ${cwd} (exit ${status}): ${stderr.trim().slice(0, 500)}`);
+  return stdout;
+}
 
 // ---------- claude and the simulated user ----------
 
@@ -168,23 +174,66 @@ const skillsDir = agent === "codex" ? ".agents" : ".claude";
 function installSkills(arm, ws) {
   const target = join(ws, skillsDir, "skills");
   mkdirSync(target, { recursive: true });
+  if (arm === "matt" && !existsSync(join(opts.out, "_matt"))) {
+    const clone = join(opts.out, "_matt");
+    must("git", ["clone", "--quiet", MATT_REPO, clone], opts.out);
+    must("git", ["checkout", "--quiet", MATT_SHA], clone);
+  }
+  for (const [name, source] of Object.entries(skillSources(arm))) cpSync(source, join(target, name), { recursive: true });
+}
+
+// Skill name -> source folder, for each arm.
+function skillSources(arm) {
   if (arm === "ryan") {
-    for (const skill of readdirSync(join(repoDir, "skills")).filter((name) => name.startsWith("ryan-"))) {
-      cpSync(join(repoDir, "skills", skill), join(target, skill), { recursive: true });
-    }
+    return Object.fromEntries(readdirSync(join(repoDir, "skills")).filter((name) => name.startsWith("ryan-")).map((name) => [name, join(repoDir, "skills", name)]));
   }
   if (arm === "matt") {
     const clone = join(opts.out, "_matt");
-    if (!existsSync(clone)) {
-      run("git", ["clone", "--quiet", MATT_REPO, clone], opts.out);
-      run("git", ["checkout", "--quiet", MATT_SHA], clone);
-    }
-    for (const folder of MATT_FOLDERS) {
-      for (const skill of readdirSync(join(clone, "skills", folder))) {
-        cpSync(join(clone, "skills", folder, skill), join(target, skill), { recursive: true });
-      }
-    }
+    const head = must("git", ["rev-parse", "HEAD"], clone).trim();
+    if (head !== MATT_SHA) throw new Error(`${clone} is at ${head}, not ${MATT_SHA}; delete it and run prepare again`);
+    // Skills are folders; each group folder also holds a README.md, which is not a skill.
+    return Object.fromEntries(MATT_FOLDERS.flatMap((folder) => readdirSync(join(clone, "skills", folder), { withFileTypes: true })
+      .filter((entry) => entry.isDirectory()).map((entry) => [entry.name, join(clone, "skills", folder, entry.name)])));
   }
+  return {};
+}
+
+const filesIn = (dir, prefix = "") => readdirSync(dir, { withFileTypes: true })
+  .flatMap((entry) => (entry.isDirectory() ? filesIn(join(dir, entry.name), `${prefix}${entry.name}/`) : [`${prefix}${entry.name}`]));
+
+// Files each setup command must write. They differ per setup: Matt's writes to the agent's own file.
+const SETUP_FILES = {
+  none: [],
+  ryan: ["AGENTS.md", "CLAUDE.md", ".ai/setup-answers.md", ...["autonomy", "engineering", "verification", "git", "docs"].map((name) => `.ai/rules/${name}.md`)],
+  matt: [agent === "codex" ? "AGENTS.md" : "CLAUDE.md", "docs/agents/domain.md", "docs/agents/issue-tracker.md", "docs/agents/triage-labels.md"],
+};
+
+export function checkSetupCalls(arm, calls) {
+  const failed = calls.filter((call) => call.is_error);
+  if (failed.length) throw new Error(`${arm} setup: ${failed.length} agent call(s) failed: ${failed[0].error ?? failed[0].result ?? "no detail"}`);
+}
+
+// Stops the bench when an arm's fixture lacks its exact skills or its setup files. Run by prepare and run.
+export function validateSetup(arm, ws) {
+  const problems = [];
+  const installed = join(ws, skillsDir, "skills");
+  const expected = skillSources(arm);
+  const names = existsSync(installed) ? readdirSync(installed) : [];
+  const missing = Object.keys(expected).filter((name) => !names.includes(name));
+  const extra = names.filter((name) => !(name in expected));
+  if (missing.length) problems.push(`skills missing: ${missing.join(", ")}`);
+  if (extra.length) problems.push(`skills that do not belong to ${arm}: ${extra.join(", ")}`);
+  for (const [name, source] of Object.entries(expected).filter(([name]) => names.includes(name))) {
+    const want = filesIn(source), have = filesIn(join(installed, name));
+    const differ = [...new Set([...want, ...have])].filter((file) =>
+      !want.includes(file) || !have.includes(file) || !readFileSync(join(source, file)).equals(readFileSync(join(installed, name, file))));
+    if (differ.length) problems.push(`skill ${name} differs from its source: ${differ.join(", ")}`);
+  }
+  // A dry run calls no agent, so no setup files are written.
+  for (const file of opts.dry ? [] : SETUP_FILES[arm]) {
+    if (!existsSync(join(ws, file)) || !readFileSync(join(ws, file), "utf8").trim()) problems.push(`setup did not write ${file}`);
+  }
+  if (problems.length) throw new Error(`setup check failed for ${arm} (${ws}):\n- ${problems.join("\n- ")}`);
 }
 
 // Points <ws>/.git at a git folder outside the workspace (see codex()).
@@ -236,7 +285,7 @@ function prepare() {
     rmSync(ws, { recursive: true, force: true });
     rmSync(gitDir, { recursive: true, force: true });
     cpSync(join(benchDir, "fixture"), ws, { recursive: true });
-    const git = gitIn(ws);
+    const git = (args) => must("git", args, ws);
     git(["init", "--quiet", "-b", "main", `--separate-git-dir=${gitDir}`]);
     git(["config", "user.name", "bench"]);
     git(["config", "user.email", "bench@example.invalid"]);
@@ -248,9 +297,11 @@ function prepare() {
       git(["commit", "--quiet", "-m", `add ${arm} skills`]);
       const calls = converse(ws, [{ prompt: SETUP[arm] }], { untilChanged: true });
       writeFileSync(join(opts.out, "_base", `${arm}.setup.json`), JSON.stringify(calls, null, 2));
+      checkSetupCalls(arm, calls);
       git(["add", "-A"]);
       git(["commit", "--quiet", "--allow-empty", "-m", `${arm} setup`]);
     }
+    validateSetup(arm, ws);
     console.log(`prepared ${arm}`);
   }
 }
@@ -271,6 +322,10 @@ function preflight() {
 
 function runTasks() {
   const setup = checkSetup();
+  for (const arm of opts.arms) {
+    if (!existsSync(join(opts.out, "_base", `${arm}.git`))) throw new Error(`no fixture for ${arm}; run prepare first`);
+    validateSetup(arm, join(opts.out, "_base", arm));
+  }
   for (const task of tasks.filter((t) => opts.tasks.includes(t.id))) {
     for (const arm of opts.arms) {
       for (const variant of Object.keys(task.steps).filter((v) => v === "plain" || v === arm)) {
@@ -283,7 +338,7 @@ function runTasks() {
           cpSync(join(opts.out, "_base", arm), ws, { recursive: true });
           cpSync(join(opts.out, "_base", `${arm}.git`), join(runDir, "git"), { recursive: true });
           linkGit(ws, join(runDir, "git"));
-          const base = gitIn(ws)(["rev-parse", "HEAD"]).trim();
+          const base = must("git", ["rev-parse", "HEAD"], ws).trim();
           task.prepare?.({ ws, runDir, run });
           const started = Date.now();
           const calls = converse(ws, task.steps[variant], { reply: task.reply, replies: task.replies });
