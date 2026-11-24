@@ -28,15 +28,15 @@ Every rule traces to a real project or a decision; see [docs/sources](docs/sourc
 
 ## Benchmark
 
-Same tasks, same Codex model, fresh copy of a small app each run, hidden tests run afterwards. First results, 1 run each:
+Same tasks, same Codex model, fresh copy of a small app each run, hidden tests run afterwards. Means of 2 runs each:
 
 | Task | none | ryan | matt |
 |---|---|---|---|
-| Plan and build a feature with each setup's own commands | – | 8/8 tests, 136k tokens, 5.5 min | 8/8 tests, 327k tokens, 10.7 min |
-| Same feature, plain prompt | 8/8, 58k | 8/8, 36k | 8/8, 56k |
+| Plan and build a feature with each setup's own commands | – | 16/16 tests, 118k tokens, 4.1 min | 16/16 tests, 257k tokens, 10.7 min |
+| Same feature, plain prompt | 16/16, 54k | 16/16, 41k | 16/16, 57k |
 | Bug fix, refactor, risky migration, what-if (4 tasks) | all checks pass | all checks pass | all checks pass |
 
-Tokens are fresh (uncached) tokens. Correctness and safety tie on these tasks; Ryan's edge is cost on bigger work, and it costs 5 to 15k more on small tasks for reading its rules. Full table, method and limits: [bench/results/2026-11-24-codex.md](bench/results/2026-11-24-codex.md).
+Tokens are fresh (uncached) tokens. Correctness and safety tie on these tasks; Ryan's edge is cost on bigger work. On small coding tasks it costs up to 16k more for reading its rules. Full table, method and limits: [bench/results/2026-11-24-codex.md](bench/results/2026-11-24-codex.md).
 
 ## Quick start
 
@@ -114,7 +114,7 @@ docs/README.md
 | Tool | Status |
 |---|---|
 | Claude Code | Tested: scenarios 1 to 7 in [tests/scenarios.md](tests/scenarios.md) |
-| Codex | Tested in the [benchmark](bench/results/2026-11-24-codex.md): setup, plan, `implement all` and plain prompts, 1 run each |
+| Codex | Tested in the [benchmark](bench/results/2026-11-24-codex.md): setup, plan, `implement all` and plain prompts, 2 runs each |
 | OpenCode | Built to the official skill docs; not yet tested |
 | Antigravity | Built to the official skill docs; not yet tested |
 
