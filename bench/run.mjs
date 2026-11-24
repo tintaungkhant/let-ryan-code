@@ -328,9 +328,14 @@ function runUsage(calls) {
 }
 const tokens = (calls) => runUsage(calls).tokens;
 
-// A test command that exits non-zero, or prints no summary, failed even when no failing test was parsed.
 function nodeTests(ws, files) {
   const { stdout, status } = run("node", ["--test", "--test-reporter=tap", ...files], ws);
+  return readTap(stdout, status);
+}
+
+// A test command that exits non-zero, or prints no summary, failed even when no failing test was parsed.
+// Exported with hiddenScore for bench/selftest.mjs.
+export function readTap(stdout, status) {
   const count = (name) => Number(stdout.match(new RegExp(`^# ${name} (\\d+)`, "m"))?.[1] ?? NaN);
   const pass = count("pass"), fail = count("fail");
   const parsed = Number.isFinite(pass) && Number.isFinite(fail);
@@ -338,9 +343,17 @@ function nodeTests(ws, files) {
     pass: parsed ? pass : 0,
     fail: parsed ? fail : 0,
     ok: status === 0 && parsed && fail === 0,
-    // The run itself worked: a non-zero exit is explained by failing tests, not a crash.
-    ran: parsed && (status === 0 || fail > 0),
+    // The run itself is valid when its exit code agrees with its counts: exit 0 with no failures,
+    // or a non-zero exit explained by failing tests. Passing tests with a non-zero exit is invalid.
+    ran: parsed && (status === 0) === (fail === 0),
   };
+}
+
+// A run scores its passes only when the test run is valid and ran the expected number of tests;
+// otherwise it scores 0 of the expected total. The raw counts stay for debugging.
+export function hiddenScore(hidden, expected) {
+  const valid = hidden.ran && hidden.pass + hidden.fail === expected;
+  return { hiddenPass: valid ? hidden.pass : 0, hiddenTotal: expected, hiddenRunOk: valid, hiddenRawPass: hidden.pass, hiddenRawFail: hidden.fail };
 }
 
 function score(runDir) {
@@ -378,9 +391,7 @@ function score(runDir) {
     errors: calls.filter((call) => call.is_error).length,
     permissionDenials: calls.reduce((total, call) => total + (call.permission_denials?.length ?? 0), 0),
     ownTestsPass: ownTests.ok && ownTests.pass > 0,
-    // The total is the expected count, so tests that never ran count as failed.
-    hiddenPass: Math.min(hidden.pass, task.hiddenTests), hiddenTotal: task.hiddenTests,
-    hiddenRunOk: hidden.ran && hidden.pass + hidden.fail === task.hiddenTests,
+    ...hiddenScore(hidden, task.hiddenTests),
     filesChanged: changedFiles.length, linesChanged: lines, newCommits,
     ...(task.checks?.({ ws, runDir, git, base: meta.base, changedFiles, newCommits }) ?? {}),
   };
@@ -406,9 +417,10 @@ function summary() {
   const mean = (rows, key) => rows.reduce((total, r) => total + Number(r[key]), 0) / rows.length;
   const rate = (rows, key) => `${rows.filter((r) => r[key] === true).length}/${rows.length}`;
   const checkKeys = keys.filter((k) => typeof results.find((r) => k in r)[k] === "boolean");
-  const header = ["task", "arm", "variant", "runs", "k tokens", "k fresh", "minutes", "hidden tests", "questions", "files", ...checkKeys];
+  const header = ["task", "arm", "variant", "runs", "k tokens", "k fresh", "minutes", "hidden tests", "invalid test runs", "questions", "files", ...checkKeys];
   const rows = [...groups].map(([group, rs]) => [...group.split("|"), rs.length, (mean(rs, "tokens") / 1000).toFixed(0), (mean(rs, "freshTokens") / 1000).toFixed(0), mean(rs, "minutes").toFixed(1),
     `${rs.reduce((t, r) => t + r.hiddenPass, 0)}/${rs.reduce((t, r) => t + r.hiddenTotal, 0)}`,
+    rs.filter((r) => !r.hiddenRunOk).length,
     mean(rs, "questions").toFixed(1), mean(rs, "filesChanged").toFixed(1), ...checkKeys.map((k) => (k in rs[0] ? rate(rs, k) : "-"))]);
   const markdown = (head, body) => [head, head.map(() => "---"), ...body].map((row) => `| ${row.join(" | ")} |`).join("\n");
   const table = markdown(header, rows);
@@ -454,11 +466,13 @@ function grading() {
   console.log(`wrote ${Object.keys(key).length} patches to ${dir}; the key is in grading-key.json (keep it away from graders)`);
 }
 
-mkdirSync(opts.out, { recursive: true });
-const commands = { prepare, preflight, run: runTasks, summary, grading };
-const command = commands[argv[0]];
-if (!command) {
-  console.error(`usage: node bench/run.mjs <${Object.keys(commands).join("|")}> [options]`);
-  process.exit(1);
+if (import.meta.main) {
+  mkdirSync(opts.out, { recursive: true });
+  const commands = { prepare, preflight, run: runTasks, summary, grading };
+  const command = commands[argv[0]];
+  if (!command) {
+    console.error(`usage: node bench/run.mjs <${Object.keys(commands).join("|")}> [options]`);
+    process.exit(1);
+  }
+  command();
 }
-command();
