@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>let-ryan-code: agent skills for Claude Code, Codex, OpenCode and Antigravity</title>
+  <meta name="description" content="Open-source agent skills for AI coding agents: a small planner (spec, tickets, implement) and real engineering rules for Claude Code, Codex, OpenCode and Antigravity. 59–65% fewer tokens on planned features in an open benchmark.">
+  <meta name="keywords" content="agent skills, claude code skills, codex skills, opencode, antigravity, AGENTS.md, CLAUDE.md, ai coding agent, coding agent rules, spec driven development, ai pair programming">
+  <meta name="author" content="tintaungkhant">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0d0e1c">
+  <link rel="canonical" href="https://tintaungkhant.github.io/let-ryan-code/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="let-ryan-code">
+  <meta property="og:title" content="let-ryan-code: talk to Ryan, your coding agent">
+  <meta property="og:description" content="A practical, engineering-focused skill set for AI coding agents. Specs, tickets, implement, verify. Works with Claude Code, Codex, OpenCode and Antigravity.">
+  <meta property="og:url" content="https://tintaungkhant.github.io/let-ryan-code/">
+  <meta property="og:image" content="https://tintaungkhant.github.io/let-ryan-code/assets/social-preview.jpg">
+  <meta property="og:image:width" content="1774">
+  <meta property="og:image:height" content="887">
+  <meta property="og:image:alt" content="let-ryan-code: a practical, engineering-focused skill set for AI coding agents">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="let-ryan-code: talk to Ryan, your coding agent">
+  <meta name="twitter:description" content="Agent skills for Claude Code, Codex, OpenCode and Antigravity: a small planner and real engineering rules.">
+  <meta name="twitter:image" content="https://tintaungkhant.github.io/let-ryan-code/assets/social-preview.jpg">
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='4' width='28' height='24' rx='6' fill='%230d0e1c' stroke='%238b5cf6' stroke-width='2.5'/%3E%3Cpath d='M9 12l4 4-4 4M15 21h7' stroke='%23fff' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareSourceCode",
+    "name": "let-ryan-code",
+    "description": "Agent skills for Claude Code, Codex, OpenCode and Antigravity: a small planner (spec, tickets, implement) and engineering rules distilled from 30 AI-driven projects.",
+    "url": "https://tintaungkhant.github.io/let-ryan-code/",
+    "codeRepository": "https://github.com/tintaungkhant/let-ryan-code",
+    "license": "https://opensource.org/licenses/MIT",
+    "programmingLanguage": "Markdown",
+    "image": "https://tintaungkhant.github.io/let-ryan-code/assets/social-preview.jpg",
+    "author": { "@type": "Person", "name": "tintaungkhant", "url": "https://github.com/tintaungkhant" },
+    "keywords": "agent skills, Claude Code, Codex, OpenCode, Antigravity, AGENTS.md, AI coding agent"
+  }
+  </script>
+
+  <style>
+    :root {
+      --bg: #0d0e1c; --panel: #151731; --line: #262a4d; --text: #eef0ff; --muted: #a3a8cc;
+      --violet: #8b5cf6; --cyan: #22d3ee; --grad: linear-gradient(90deg, #a78bfa, #22d3ee);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    a { color: var(--cyan); }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+    header { padding: 32px 0 8px; }
+    .banner { width: 100%; height: auto; border-radius: 16px; border: 1px solid var(--line); display: block; }
+    h1 { font-size: clamp(28px, 5vw, 44px); line-height: 1.15; margin: 40px 0 12px; }
+    h1 span { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .lead { color: var(--muted); font-size: 18px; max-width: 720px; margin: 0 0 24px; }
+    .install { display: flex; gap: 8px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 12px 12px 16px; max-width: 640px; }
+    .install code { flex: 1; overflow-x: auto; white-space: nowrap; font: 15px ui-monospace, SFMono-Regular, Consolas, monospace; }
+    button { background: var(--violet); color: #fff; border: 0; border-radius: 8px; padding: 8px 14px; font: inherit; cursor: pointer; }
+    button:focus-visible, a:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+    .cta { display: flex; flex-wrap: wrap; gap: 12px; margin: 20px 0 0; }
+    .btn { display: inline-block; padding: 10px 18px; border-radius: 10px; text-decoration: none; font-weight: 600; }
+    .btn.primary { background: var(--grad); color: #0d0e1c; }
+    .btn.ghost { border: 1px solid var(--line); color: var(--text); }
+    section { padding: 48px 0 8px; }
+    h2 { font-size: 26px; margin: 0 0 16px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+    .card h3 { margin: 0 0 6px; font-size: 17px; }
+    .card p { margin: 0; color: var(--muted); font-size: 15px; }
+    .num { font-size: 34px; font-weight: 700; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    pre { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px; overflow-x: auto; font: 14px/1.6 ui-monospace, SFMono-Regular, Consolas, monospace; margin: 0; }
+    .muted { color: var(--muted); }
+    footer { padding: 48px 0; color: var(--muted); font-size: 14px; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <img class="banner" src="assets/banner.webp" width="1774" height="887" alt="let-ryan-code: a practical, engineering-focused skill set for AI coding agents. Specs, tickets, implement, verify.">
+    </header>
+
+    <main>
+      <h1>Talk to <span>Ryan</span>, your coding agent.</h1>
+      <p class="lead">Agent skills for Claude Code, Codex, OpenCode and Antigravity: a small planner and real engineering rules, distilled from 30 AI-driven projects. Free and open source (MIT).</p>
+
+      <div class="install">
+        <code id="cmd">npx skills add tintaungkhant/let-ryan-code -g</code>
+        <button type="button" id="copy">Copy</button>
+      </div>
+      <p class="muted">Then run <code>/ryan-wake-up</code> in any project.</p>
+
+      <div class="cta">
+        <a class="btn primary" href="https://github.com/tintaungkhant/let-ryan-code">View on GitHub</a>
+        <a class="btn ghost" href="https://github.com/tintaungkhant/let-ryan-code/tree/main/bench/results">See the benchmark</a>
+      </div>
+
+      <section aria-labelledby="why">
+        <h2 id="why">What Ryan fixes</h2>
+        <div class="grid">
+          <div class="card"><h3>Asks once, not always</h3><p>At setup you answer yes, no or flexible for installs, commits, pushes, deploys and paid runs.</p></div>
+          <div class="card"><h3>No "done" without proof</h3><p>Reports only checks it ran, never weakens a failing test, and leaves a ticket open when a box is not verified.</p></div>
+          <div class="card"><h3>Plans in one screen</h3><p>About 10 questions with recommended answers, a one-screen spec, and tickets you can commit one by one.</p></div>
+          <div class="card"><h3>Production safety rules</h3><p>Asks before destructive migrations; tests never touch a real database, send real messages or move real money.</p></div>
+        </div>
+      </section>
+
+      <section aria-labelledby="flow">
+        <h2 id="flow">The flow</h2>
+<pre>/ryan-wake-up     set this project up
+/ryan-plan        a few questions, then a spec and tickets
+/ryan-implement   build the next ticket (or 02, or all)
+/ryan-status      what's next
+/ryan-talk        just discuss, no spec</pre>
+      </section>
+
+      <section aria-labelledby="bench">
+        <h2 id="bench">Open benchmark</h2>
+        <div class="grid">
+          <div class="card"><div class="num">59% fewer</div><p>fresh tokens than Matt Pocock's skills to plan and build a feature in Codex (130k vs 314k), same hidden-test results.</p></div>
+          <div class="card"><div class="num">65% fewer</div><p>in Claude Code (64k vs 185k), same hidden-test results.</p></div>
+          <div class="card"><div class="num">3 runs</div><p>per setup, every run published as CSV. On small tasks Ryan costs 5k to 11k more tokens; that is published too.</p></div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <a href="https://github.com/tintaungkhant/let-ryan-code">github.com/tintaungkhant/let-ryan-code</a> · MIT license
+    </footer>
+  </div>
+  <script>
+    document.getElementById("copy").addEventListener("click", async (event) => {
+      try {
+        await navigator.clipboard.writeText(document.getElementById("cmd").textContent);
+        event.target.textContent = "Copied";
+      } catch {
+        event.target.textContent = "Select and copy";
+      }
+    });
+  </script>
+</body>
+</html>
