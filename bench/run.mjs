@@ -246,7 +246,7 @@ function runTasks() {
           cpSync(join(opts.out, "_base", `${arm}.git`), join(runDir, "git"), { recursive: true });
           linkGit(ws, join(runDir, "git"));
           const base = gitIn(ws)(["rev-parse", "HEAD"]).trim();
-          task.prepare?.({ ws, run });
+          task.prepare?.({ ws, runDir, run });
           const started = Date.now();
           const calls = converse(ws, task.steps[variant], { reply: task.reply, replies: task.replies });
           writeFileSync(join(runDir, "meta.json"), JSON.stringify({ task: task.id, arm, variant, rep, base, agent, model: opts.model ?? "default", permissionMode: opts.permissionMode, wallMs: Date.now() - started }, null, 2));
@@ -331,7 +331,7 @@ function score(runDir) {
     ownTestsPass: ownTests.fail === 0 && ownTests.pass > 0,
     hiddenPass: hidden.pass, hiddenTotal: hidden.pass + hidden.fail,
     filesChanged: changedFiles.length, linesChanged: lines, newCommits,
-    ...(task.checks?.({ ws, git, changedFiles, newCommits }) ?? {}),
+    ...(task.checks?.({ ws, runDir, git, base: meta.base, changedFiles, newCommits }) ?? {}),
   };
   writeFileSync(join(runDir, "score.json"), JSON.stringify(result, null, 2));
   return result;
