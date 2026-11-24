@@ -43,7 +43,7 @@ Claude Code is the default. Add `--agent codex` to every command to run the benc
 6. `node bench/run.mjs summary`: scores every run and writes `summary.md` and `results.csv` with tokens, subagents included. In Claude Code it also prints the cost per run to the console; no file records cost.
 7. `node bench/run.mjs grading`: anonymized diffs for blind quality grading; the key is in `grading-key.json`.
 
-Options: `--arms none,ryan,matt`, `--tasks tags,bugfix`, `--reps 3`, `--model sonnet`, `--permission-mode auto`, `--budget 5`. Add `--dry` to test the pipeline without calling Claude. `node --test bench/selftest.mjs` checks the scoring and the setup check without calling any agent.
+Options: `--arms none,ryan,matt`, `--tasks tags,bugfix`, `--reps 3`, `--model claude-sonnet-5-5` (the default: an exact ID, since an alias like `sonnet` can move to a newer model), `--permission-mode auto`, `--budget 5`. The model and the budget are recorded in `bench.json` like the other versions. Add `--dry` to test the pipeline without calling Claude. `node --test bench/selftest.mjs` checks the scoring and the setup check without calling any agent.
 
 ## Limits
 

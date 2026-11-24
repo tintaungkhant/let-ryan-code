@@ -6,7 +6,7 @@
 //   node bench/run.mjs run          run the tasks
 //   node bench/run.mjs summary      score every run and write summary.md and results.csv
 //   node bench/run.mjs grading      export anonymized diffs for blind grading
-// Options: --agent claude|codex --out <dir> --arms none,ryan,matt --tasks tags,bugfix --reps 3 --model sonnet
+// Options: --agent claude|codex --out <dir> --arms none,ryan,matt --tasks tags,bugfix --reps 3 --model claude-sonnet-5-5
 //          --permission-mode auto --budget 5 --dry (no claude calls; tests the pipeline)
 import { spawnSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync, statSync } from "node:fs";
@@ -36,7 +36,8 @@ const opts = {
   arms: option("arms", "none,ryan,matt").split(","),
   tasks: option("tasks", tasks.map((task) => task.id).join(",")).split(","),
   reps: Number(option("reps", "3")),
-  model: option("model", agent === "claude" ? "sonnet" : undefined),
+  // An exact model ID by default, so a run cannot drift to a newer model behind an alias like "sonnet".
+  model: option("model", agent === "claude" ? "claude-sonnet-5-5" : undefined),
   permissionMode: option("permission-mode", "auto"),
   budget: option("budget", "5"),
   dry: argv.includes("--dry"),
@@ -251,6 +252,8 @@ function setupInfo() {
     agent,
     cli: opts.dry ? "dry" : run(agent, ["--version"], repoDir).stdout.trim(),
     model: opts.model ?? "default",
+    // --budget caps each Claude Code call; Codex has no budget.
+    budget: agent === "claude" ? `$${opts.budget} per call` : "n/a",
     permissions: agent === "codex" ? "sandbox workspace-write, --ignore-user-config" : `--permission-mode ${opts.permissionMode}, --setting-sources project,local`,
     ryanSkillsTree: repoGit(["rev-parse", "HEAD:skills"]),
     benchTree: repoGit(["rev-parse", "HEAD:bench"]),
