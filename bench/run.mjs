@@ -261,8 +261,34 @@ function runTasks() {
 // ---------- score ----------
 
 const sum = (calls, key) => calls.reduce((total, call) => total + (Number(call[key]) || 0), 0);
-const tokens = (calls) => calls.reduce((total, { usage = {} }) =>
-  total + (usage.input_tokens ?? 0) + (usage.output_tokens ?? 0) + (usage.cache_creation_input_tokens ?? 0) + (usage.cache_read_input_tokens ?? 0), 0);
+
+// Claude Code's modelUsage and total_cost_usd are running totals for the whole session, subagents included,
+// while its usage field covers only the main agent in one call. So for Claude, a run's totals are the last
+// call of each session. Codex reports usage per call, so its calls add up.
+function runUsage(calls) {
+  const totals = { input: 0, cacheWrite: 0, cacheRead: 0, output: 0, costUsd: 0 };
+  if (calls.length && calls.every((call) => call.modelUsage)) {
+    for (const call of new Map(calls.map((call) => [call.session_id, call])).values()) {
+      for (const model of Object.values(call.modelUsage)) {
+        totals.input += model.inputTokens ?? 0;
+        totals.cacheWrite += model.cacheCreationInputTokens ?? 0;
+        totals.cacheRead += model.cacheReadInputTokens ?? 0;
+        totals.output += model.outputTokens ?? 0;
+      }
+      totals.costUsd += call.total_cost_usd ?? 0;
+    }
+  } else {
+    for (const { usage = {} } of calls) {
+      totals.input += usage.input_tokens ?? 0;
+      totals.cacheWrite += usage.cache_creation_input_tokens ?? 0;
+      totals.cacheRead += usage.cache_read_input_tokens ?? 0;
+      totals.output += usage.output_tokens ?? 0;
+    }
+  }
+  const fresh = totals.input + totals.cacheWrite + totals.output;
+  return { tokens: fresh + totals.cacheRead, freshTokens: fresh, costUsd: totals.costUsd };
+}
+const tokens = (calls) => runUsage(calls).tokens;
 
 function nodeTests(ws, files) {
   const { stdout } = run("node", ["--test", "--test-reporter=tap", ...files], ws);
@@ -298,8 +324,7 @@ function score(runDir) {
 
   const result = {
     task: meta.task, arm: meta.arm, variant: meta.variant, rep: meta.rep,
-    costUsd: sum(calls, "total_cost_usd"), minutes: sum(calls, "duration_ms") / 60000, tokens: tokens(calls),
-    freshTokens: tokens(calls) - calls.reduce((total, { usage = {} }) => total + (usage.cache_read_input_tokens ?? 0), 0),
+    ...runUsage(calls), minutes: sum(calls, "duration_ms") / 60000,
     calls: calls.length, questions: calls.filter((call) => asksQuestion(call.result)).length,
     errors: calls.filter((call) => call.is_error).length,
     permissionDenials: calls.reduce((total, call) => total + (call.permission_denials?.length ?? 0), 0),
@@ -322,20 +347,25 @@ function allRunDirs() {
 function summary() {
   const results = allRunDirs().map(score);
   if (!results.length) return console.log("no runs yet");
-  const keys = Object.keys(Object.assign({}, ...results));
+  // Results report tokens only; cost goes to the console.
+  const keys = Object.keys(Object.assign({}, ...results)).filter((k) => k !== "costUsd");
   writeFileSync(join(opts.out, "results.csv"), [keys.join(","), ...results.map((r) => keys.map((k) => r[k] ?? "").join(","))].join("\n") + "\n");
 
   const groups = Map.groupBy(results, (r) => `${r.task}|${r.arm}|${r.variant}`);
   const mean = (rows, key) => rows.reduce((total, r) => total + Number(r[key]), 0) / rows.length;
   const rate = (rows, key) => `${rows.filter((r) => r[key] === true).length}/${rows.length}`;
   const checkKeys = keys.filter((k) => typeof results.find((r) => k in r)[k] === "boolean");
-  const header = ["task", "arm", "variant", "runs", "cost $", "k tokens", "k fresh", "minutes", "hidden tests", "questions", "files", ...checkKeys];
-  const rows = [...groups].map(([group, rs]) => [...group.split("|"), rs.length, mean(rs, "costUsd").toFixed(2), (mean(rs, "tokens") / 1000).toFixed(0), (mean(rs, "freshTokens") / 1000).toFixed(0), mean(rs, "minutes").toFixed(1),
+  const header = ["task", "arm", "variant", "runs", "k tokens", "k fresh", "minutes", "hidden tests", "questions", "files", ...checkKeys];
+  const rows = [...groups].map(([group, rs]) => [...group.split("|"), rs.length, (mean(rs, "tokens") / 1000).toFixed(0), (mean(rs, "freshTokens") / 1000).toFixed(0), mean(rs, "minutes").toFixed(1),
     `${rs.reduce((t, r) => t + r.hiddenPass, 0)}/${rs.reduce((t, r) => t + r.hiddenTotal, 0)}`,
     mean(rs, "questions").toFixed(1), mean(rs, "filesChanged").toFixed(1), ...checkKeys.map((k) => (k in rs[0] ? rate(rs, k) : "-"))]);
   const table = [header, header.map(() => "---"), ...rows].map((row) => `| ${row.join(" | ")} |`).join("\n");
-  writeFileSync(join(opts.out, "summary.md"), `# Bench summary\n\nAgent: ${agent}. Model: ${opts.model ?? "default"}. Means per run; checks count passing runs. Codex reports tokens, not cost.\n\n${table}\n`);
+  writeFileSync(join(opts.out, "summary.md"), `# Bench summary\n\nAgent: ${agent}. Model: ${opts.model ?? "default"}. Means per run; checks count passing runs. Fresh tokens are all tokens except cached re-reads.\n\n${table}\n`);
   console.log(table);
+  if (results.some((r) => r.costUsd)) {
+    console.log("\nCost per run (mean $, from Claude Code; not written to any file):");
+    for (const [group, rs] of groups) console.log(`  ${group.replaceAll("|", " ")}: ${mean(rs, "costUsd").toFixed(2)}`);
+  }
 }
 
 // ---------- blind grading export ----------
