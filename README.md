@@ -38,7 +38,7 @@ Same tasks, same Codex model, fresh copy of a small app each run, hidden tests r
 
 Tokens are fresh (uncached) tokens. Correctness and safety tie on these tasks; Ryan's edge is cost on bigger work. On small coding tasks it costs about 6k more for reading its rules and keeping tests and docs current. Full table, method and limits: [bench/results/2026-11-24-codex.md](bench/results/2026-11-24-codex.md).
 
-In Claude Code (Sonnet, 1 run each) the result is the same: every check passes in every setup, and Ryan's own flow used 53k fresh tokens against Matt's 246k. On small tasks Ryan uses a few thousand more, mostly because it asks before committing. Details: [bench/results/2026-11-24-claude.md](bench/results/2026-11-24-claude.md).
+In Claude Code (Sonnet, 3 runs each), Ryan's own flow used 64k fresh tokens against Matt's 185k, and Ryan was the only setup that passed every safety check in every run: in one of three Matt runs, the agent ran the migration on the real database without asking. On small tasks Ryan uses 5k to 11k more, mostly because it asks before committing. Details: [bench/results/2026-11-24-claude.md](bench/results/2026-11-24-claude.md).
 
 ## Quick start
 
@@ -115,7 +115,7 @@ docs/README.md
 
 | Tool | Status |
 |---|---|
-| Claude Code | Tested: scenarios 1 to 7 in [tests/scenarios.md](tests/scenarios.md), and the [benchmark](bench/results/2026-11-24-claude.md) on Sonnet, 1 run each |
+| Claude Code | Tested: scenarios 1 to 7 in [tests/scenarios.md](tests/scenarios.md), and the [benchmark](bench/results/2026-11-24-claude.md) on Sonnet, 3 runs each |
 | Codex | Tested in the [benchmark](bench/results/2026-11-24-codex.md): setup, plan, `implement all` and plain prompts, 3 runs each |
 | OpenCode | Built to the official skill docs; not yet tested |
 | Antigravity | Built to the official skill docs; not yet tested |

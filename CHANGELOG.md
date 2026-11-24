@@ -6,7 +6,7 @@
 - Subagents: model picked by complexity, ambiguity and expected retries; move up a model after a failure; targeted read of security, money, concurrency and data-integrity changes.
 - `ryan-plan`: a ticket can take several commits; one commit never holds two tickets. A verified ticket is done even when it cannot be committed yet, so the next ticket is not blocked; once approved, such tickets get one commit each.
 - `ryan-plan`: one confirmation for spec and tickets together; `ryan-implement all` builds every open ticket in one run.
-- `bench/`: no skills vs let-ryan-code vs Matt Pocock's skills, in Claude Code or Codex; Codex (3 runs) and Claude Code (1 run) results in `bench/results/`, reported in tokens with subagents included.
+- `bench/`: no skills vs let-ryan-code vs Matt Pocock's skills, in Claude Code or Codex; Codex and Claude Code results (3 runs each) in `bench/results/`, reported in tokens with subagents included.
 
 ## 0.1.0 (2026-11-23)
 
