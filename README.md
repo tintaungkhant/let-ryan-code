@@ -173,6 +173,8 @@ docs/README.md
 
 ## Security
 
+> **Security note:** Ryan's guardrails are instructions to the agent, not runtime enforcement. They shape what the agent does but cannot guarantee it, and they do not replace sandboxing, permission settings or human review.
+
 - `.env` files are read only if you allow it at setup. Otherwise Ryan works from `.env.example` and the code.
 - Deploy credentials live in a gitignored file, are read only for deploy tasks, never printed, and never passed to subagents. Logged-in CLIs, SSH aliases and profiles are preferred, so a secret never enters the conversation.
 - Tests never send real messages, emails or payments, and never touch a non-test database.
