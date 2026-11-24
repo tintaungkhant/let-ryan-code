@@ -1,44 +1,91 @@
+<div align="center">
+
+<a href="https://github.com/tintaungkhant/let-ryan-code">
+  <img src="docs/assets/banner.webp" alt="let-ryan-code: a practical, engineering-focused skill set for AI coding agents. Specs, tickets, implement, verify." width="100%">
+</a>
+
 # let-ryan-code
+
+**Talk to Ryan, your coding agent.**<br>
+Agent skills for Claude Code, Codex, OpenCode and Antigravity: a small planner and real engineering rules, distilled from 30 AI-driven projects.
 
 [![validate](https://github.com/tintaungkhant/let-ryan-code/actions/workflows/validate.yml/badge.svg)](https://github.com/tintaungkhant/let-ryan-code/actions/workflows/validate.yml)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![skills: 10](https://img.shields.io/badge/skills-10-8b5cf6.svg)](#commands)
+[![works with](https://img.shields.io/badge/works%20with-Claude%20Code%20%C2%B7%20Codex%20%C2%B7%20OpenCode%20%C2%B7%20Antigravity-22d3ee.svg)](#works-with)
+[![benchmark: open data](https://img.shields.io/badge/benchmark-open%20data-6366f1.svg)](#benchmark)
 
-Talk to Ryan, your coding agent. One set of agent rules and a small planner for Claude Code, Codex, OpenCode and Antigravity, distilled from 30 AI-driven projects (personal and company).
+[Quick start](#quick-start) · [How it works](#how-it-works) · [Commands](#commands) · [Benchmark](#benchmark) · [What you get](#what-you-get) · [FAQ](#faq)
+
+</div>
+
+---
+
+```bash
+npx skills add tintaungkhant/let-ryan-code -g
+```
+
+Then, in any project:
 
 ```
-/ryan-wake-up     set this project up
-/ryan-spec        a few questions, then a one-screen spec
-/ryan-tickets     split the spec into tickets
-/ryan-implement   build the next ticket (or 02, or all)
-/ryan-status      what's next
-/ryan-talk        just discuss, no spec
+/ryan-wake-up
 ```
 
-## Why
+Ryan reads the project, asks about a dozen setup questions, and writes the agent files. That's it.
 
-Coding agents out of the box:
+## Why Ryan?
 
-- **write a spec when you only asked "what if…?"** Ryan answers in chat, then asks once: park it, plan it, record a decision, or nothing.
-- **ask permission for everything, or for nothing.** Ryan asks you once at setup: for installs, commits, pushes, deploys and paid runs, answer *yes*, *no* or *flexible*.
-- **say "done" without proof.** Ryan reports only checks it ran, never weakens a failing test, and leaves a ticket open when a box is not verified.
-- **burn tokens.** Rules load only when a task touches them, subagents get the model that gets the job right the first time (not just the cheapest) and a precise brief, and a 30-question grill becomes about 10.
-- **leave a mess.** No background dev servers, no detached containers, worktrees only inside the project, a backup before any risky change.
+Coding agents are fast. Out of the box, they also do this:
 
-Every rule traces to a real project or a decision; see [docs/sources](docs/sources).
+| Out of the box, the agent… | With Ryan |
+|---|---|
+| 📝 **writes a spec when you only asked "what if…?"** | Answers in chat, then asks once: park it, plan it, record a decision, or nothing. |
+| 🙋 **asks permission for everything, or for nothing** | Asks you once at setup. For installs, commits, pushes, deploys and paid runs, you answer *yes*, *no* or *flexible*. |
+| ✅ **says "done" without proof** | Reports only checks it ran, never weakens a failing test, and leaves a ticket open when a box is not verified. |
+| 🔥 **burns tokens** | Loads a rule only when a task touches it, briefs subagents precisely, and turns a 30-question grill into about 10. |
+| 🧹 **leaves a mess** | No background dev servers, no detached containers, worktrees only inside the project, a backup before any risky change. |
+| 💥 **runs a migration on your real database** | Asks first. Tests never touch a non-test database, send real messages, or move real money. |
 
-## Benchmark
+Every rule traces to a real project or a decision: see [docs/sources](docs/sources). Nothing is invented.
 
-Same tasks, same Codex model, fresh copy of a small app each run, hidden tests run afterwards. Means of 3 runs each:
+## How it works
 
-| Task | none | ryan | matt |
-|---|---|---|---|
-| Plan and build a feature with each setup's own commands | – | 24/24 tests, 130k tokens, 3.9 min | 24/24 tests, 314k tokens, 11.4 min |
-| Same feature, plain prompt | 24/24, 59k | 24/24, 52k | 24/24, 50k |
-| Bug fix, refactor, risky migration, what-if (4 tasks) | all checks pass | all checks pass | all checks pass |
+```mermaid
+flowchart LR
+  W["/ryan-wake-up<br/>set up once"] --> P["/ryan-plan<br/>spec + tickets"]
+  P --> I["/ryan-implement<br/>build a ticket"]
+  I --> V{"checks pass?<br/>boxes verified?"}
+  V -- yes --> C["ticket done<br/>one commit per ticket"]
+  V -- no --> I
+  C --> S["/ryan-status<br/>what's next"]
+  S --> I
+```
 
-Tokens are fresh (uncached) tokens. Correctness and safety tie on these tasks; Ryan's edge is fewer tokens on a planned, multi-ticket feature, not better code. Fresh tokens are not dollars: cached re-reads still cost something. On small coding tasks it costs about 6k more for reading its rules and keeping tests and docs current. Full table, method and limits: [bench/results/2026-11-24-codex.md](bench/results/2026-11-24-codex.md).
+A session looks like this (an illustration, shortened):
 
-In Claude Code (Sonnet, 3 runs each), Ryan's own flow used 64k fresh tokens against Matt's 185k, with the same hidden-test results. Ryan and the no-skills setup passed every safety check in all three runs; in one of three Matt runs, the agent ran the migration on the real database without asking. On small tasks Ryan uses 5k to 11k more, mostly because it asks before committing. Details: [bench/results/2026-11-24-claude.md](bench/results/2026-11-24-claude.md).
+```text
+you   /ryan-plan add tags to contacts, filterable in the list
+
+ryan  Q1 of ~5. Should a tag be shared across contacts, or free text on each one?
+      I recommend shared, so the list can filter by it.
+you   shared
+
+ryan  Spec: contact tags (one screen) and 3 tickets:
+        01 Tag table and API          blocked by: none
+        02 Tags on the contact page   blocked by: 01
+        03 Filter the list by tag     blocked by: 02
+      Save them?
+you   yes
+
+you   /ryan-implement all
+
+ryan  01 done: npm test passed (14 tests), boxes ticked, committed.
+      02 done: npm test passed (19 tests), boxes ticked, committed.
+      03 done: npm test passed (22 tests), boxes ticked, committed.
+      All 3 tickets are done. Nothing is pushed.
+```
+
+See the real files Ryan writes on a sample app: [examples/tiny-crm](examples/tiny-crm).
 
 ## Quick start
 
@@ -58,13 +105,7 @@ Or skip the picker and name your agents:
 | OpenCode only | `npx skills add tintaungkhant/let-ryan-code -g --skill '*' -a opencode -y` |
 | Antigravity only | `npx skills add tintaungkhant/let-ryan-code -g --skill '*' -a antigravity -y` |
 
-Drop `-g` to install into the current project instead of globally. Then, in any project:
-
-```
-/ryan-wake-up
-```
-
-Ryan reads the project, asks about a dozen setup questions, and writes the agent files. See the [example output](examples/tiny-crm).
+Drop `-g` to install into the current project instead of globally. Update any time with `npx skills update`.
 
 ## Commands
 
@@ -82,6 +123,32 @@ Ryan reads the project, asks about a dozen setup questions, and writes the agent
 | `ryan-talk` | Discusses an idea or a what-if. No spec, no tickets, no files. |
 
 All commands except `ryan-plan` run only when you call them. Install every `ryan-*` skill together: the small commands run flows inside `ryan-wake-up` and `ryan-plan`.
+
+| Tool | How to call a command |
+|---|---|
+| Claude Code | `/ryan-wake-up` |
+| Codex | `$ryan-wake-up` |
+| OpenCode | `@ryan-wake-up` |
+| Antigravity | `/ryan-wake-up` |
+
+## Benchmark
+
+No skills vs let-ryan-code vs [Matt Pocock's skills](https://github.com/mattpocock/skills), on the same tasks: a fresh copy of a small app for every run, hidden tests run afterwards, 3 runs each, every run published.
+
+| Plan and build a feature with each setup's own commands | ryan | matt |
+|---|---|---|
+| Codex: fresh tokens (mean) | **130k** | 314k |
+| Claude Code: fresh tokens (mean) | **64k** | 185k |
+| Hidden tests | 24/24 | 24/24 |
+
+On that structured flow, Ryan used **59% fewer** fresh tokens in Codex and **65% fewer** in Claude Code, with the same test results. The honest part:
+
+- Correctness and safety tie on these tasks: they are too easy to show that rules make code better.
+- On small tasks Ryan costs 5k to 11k more tokens, for reading its rules and asking before it commits.
+- Fresh tokens are not dollars: cached re-reads still cost something.
+- In Claude Code, Ryan and the no-skills setup passed every safety check in all three runs. In one of three Matt runs, the agent ran the migration on the real database without asking.
+
+Full tables, per-run CSVs, method and limits: [Codex](bench/results/2026-11-24-codex.md) · [Claude Code](bench/results/2026-11-24-claude.md) · [run it yourself](bench/README.md).
 
 ## What you get
 
@@ -102,7 +169,7 @@ docs/README.md
 .scratch/              tickets and backlog, if you keep them in local files
 ```
 
-`AGENTS.md` stays short and is loaded every turn; each rule file is read only when a task touches its topic.
+`AGENTS.md` stays short and is loaded every turn; each rule file is read only when a task touches its topic. Tickets live where you want them: local files, GitHub issues, or another tool.
 
 ## Security
 
@@ -122,16 +189,8 @@ docs/README.md
 
 The files `ryan-wake-up` writes work in all four: Codex, OpenCode and Antigravity read `AGENTS.md` directly, and Claude Code reads it through `CLAUDE.md`.
 
-### Calling a command
-
-| Tool | How |
-|---|---|
-| Claude Code | `/ryan-wake-up` |
-| Codex | `$ryan-wake-up` |
-| OpenCode | `@ryan-wake-up` |
-| Antigravity | `/ryan-wake-up` |
-
-### How each tool keeps commands user-only
+<details>
+<summary><b>How each tool keeps commands user-only</b></summary>
 
 | Tool | Mechanism |
 |---|---|
@@ -139,11 +198,44 @@ The files `ryan-wake-up` writes work in all four: Codex, OpenCode and Antigravit
 | Codex | `agents/openai.yaml`: `policy.allow_implicit_invocation: false` |
 | Antigravity | No setting exists; each description says "Run only when the user asks for … by name" |
 
+</details>
+
+## FAQ
+
+<details>
+<summary><b>Does it work with my stack?</b></summary>
+
+Yes. The rules are about how to work (plan, verify, commit, ask), not about a language. `ryan-wake-up` reads your project and fills in its own checks, such as your test and lint commands.
+
+</details>
+
+<details>
+<summary><b>Will it slow me down on small tasks?</b></summary>
+
+A little: about 5k to 11k extra tokens on a small fix, for reading the rules and asking before it commits. You can set commits to *yes* at setup, or later with `ryan-rethink`, and it stops asking.
+
+</details>
+
+<details>
+<summary><b>Can I use it with other skills?</b></summary>
+
+Yes. Ryan's commands are user-only, except `ryan-plan`, so they stay out of the way until you call them.
+
+</details>
+
+<details>
+<summary><b>Can I edit the rules it writes?</b></summary>
+
+Yes, they are plain Markdown in your repo. `ryan-rethink` keeps your own edits when it changes setup answers.
+
+</details>
+
 ## Other ways to install
 
-**Update:** `npx skills update`.
+<details>
+<summary><b>From a clone</b> (for contributors: your edits apply at once)</summary>
 
-**From a clone** (for contributors: your edits apply at once). Link each skill into every tool's global skills folder.
+Link each skill into every tool's global skills folder.
 
 | Tool | Global skills folder |
 |---|---|
@@ -177,6 +269,8 @@ done
 
 Restart the tool after installing. In Antigravity CLI, `/skills reload` also works.
 
+</details>
+
 ## Repo layout
 
 ```
@@ -195,6 +289,14 @@ docs/sources/      where each rule comes from (not shipped to agents)
 4. Add a new `ryan-*` skill to the command table above; the validator fails otherwise.
 5. Add a line to [CHANGELOG.md](CHANGELOG.md).
 
-## License
+Issues and pull requests are welcome, especially results from OpenCode and Antigravity.
 
-[MIT](LICENSE)
+---
+
+<div align="center">
+
+**If Ryan saves you a few tokens, or one bad migration, a ⭐ helps other developers find it.**
+
+[MIT](LICENSE) · made by [@tintaungkhant](https://github.com/tintaungkhant)
+
+</div>
