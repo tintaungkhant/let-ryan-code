@@ -108,7 +108,8 @@ function codex(ws, prompt, sessionId) {
     const cached = e.usage?.cached_input_tokens ?? 0;
     usage.input_tokens += (e.usage?.input_tokens ?? 0) - cached;
     usage.cache_read_input_tokens += cached;
-    usage.output_tokens += (e.usage?.output_tokens ?? 0) + (e.usage?.reasoning_output_tokens ?? 0);
+    // output_tokens already includes reasoning_output_tokens (total_tokens = input_tokens + output_tokens).
+    usage.output_tokens += e.usage?.output_tokens ?? 0;
   }
   const failed = events.some((e) => e.type === "error" || e.type === "turn.failed") || status !== 0;
   return {
@@ -290,10 +291,13 @@ function runUsage(calls) {
 }
 const tokens = (calls) => runUsage(calls).tokens;
 
+// A test command that exits non-zero, or prints no summary, failed even when no failing test was parsed.
 function nodeTests(ws, files) {
-  const { stdout } = run("node", ["--test", "--test-reporter=tap", ...files], ws);
-  const count = (name) => Number(stdout.match(new RegExp(`^# ${name} (\\d+)`, "m"))?.[1] ?? 0);
-  return { pass: count("pass"), fail: count("fail") };
+  const { stdout, status } = run("node", ["--test", "--test-reporter=tap", ...files], ws);
+  const count = (name) => Number(stdout.match(new RegExp(`^# ${name} (\\d+)`, "m"))?.[1] ?? NaN);
+  const pass = count("pass"), fail = count("fail");
+  const parsed = Number.isFinite(pass) && Number.isFinite(fail);
+  return { pass: parsed ? pass : 0, fail: parsed ? fail : 0, ok: status === 0 && parsed && fail === 0 };
 }
 
 function score(runDir) {
@@ -313,7 +317,7 @@ function score(runDir) {
     .filter((line) => !ignore(line.split("\t")[2])).reduce((total, line) => total + (Number(line.split("\t")[0]) || 0) + (Number(line.split("\t")[1]) || 0), 0);
 
   const ownTests = nodeTests(ws, []);
-  let hidden = { pass: 0, fail: 0 };
+  let hidden = { pass: 0, fail: 0, ok: true };
   if (task.hidden.length) {
     const dir = join(ws, "test-hidden");
     mkdirSync(dir, { recursive: true });
@@ -328,8 +332,10 @@ function score(runDir) {
     calls: calls.length, questions: calls.filter((call) => asksQuestion(call.result)).length,
     errors: calls.filter((call) => call.is_error).length,
     permissionDenials: calls.reduce((total, call) => total + (call.permission_denials?.length ?? 0), 0),
-    ownTestsPass: ownTests.fail === 0 && ownTests.pass > 0,
-    hiddenPass: hidden.pass, hiddenTotal: hidden.pass + hidden.fail,
+    ownTestsPass: ownTests.ok && ownTests.pass > 0,
+    // The total is the expected count, so tests that never ran count as failed.
+    hiddenPass: Math.min(hidden.pass, task.hiddenTests), hiddenTotal: task.hiddenTests,
+    hiddenRunOk: hidden.ok && hidden.pass + hidden.fail === task.hiddenTests,
     filesChanged: changedFiles.length, linesChanged: lines, newCommits,
     ...(task.checks?.({ ws, runDir, git, base: meta.base, changedFiles, newCommits }) ?? {}),
   };
