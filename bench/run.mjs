@@ -334,7 +334,13 @@ function nodeTests(ws, files) {
   const count = (name) => Number(stdout.match(new RegExp(`^# ${name} (\\d+)`, "m"))?.[1] ?? NaN);
   const pass = count("pass"), fail = count("fail");
   const parsed = Number.isFinite(pass) && Number.isFinite(fail);
-  return { pass: parsed ? pass : 0, fail: parsed ? fail : 0, ok: status === 0 && parsed && fail === 0 };
+  return {
+    pass: parsed ? pass : 0,
+    fail: parsed ? fail : 0,
+    ok: status === 0 && parsed && fail === 0,
+    // The run itself worked: a non-zero exit is explained by failing tests, not a crash.
+    ran: parsed && (status === 0 || fail > 0),
+  };
 }
 
 function score(runDir) {
@@ -354,7 +360,7 @@ function score(runDir) {
     .filter((line) => !ignore(line.split("\t")[2])).reduce((total, line) => total + (Number(line.split("\t")[0]) || 0) + (Number(line.split("\t")[1]) || 0), 0);
 
   const ownTests = nodeTests(ws, []);
-  let hidden = { pass: 0, fail: 0, ok: true };
+  let hidden = { pass: 0, fail: 0, ok: true, ran: true };
   if (task.hidden.length) {
     const dir = join(ws, "test-hidden");
     mkdirSync(dir, { recursive: true });
@@ -374,7 +380,7 @@ function score(runDir) {
     ownTestsPass: ownTests.ok && ownTests.pass > 0,
     // The total is the expected count, so tests that never ran count as failed.
     hiddenPass: Math.min(hidden.pass, task.hiddenTests), hiddenTotal: task.hiddenTests,
-    hiddenRunOk: hidden.ok && hidden.pass + hidden.fail === task.hiddenTests,
+    hiddenRunOk: hidden.ran && hidden.pass + hidden.fail === task.hiddenTests,
     filesChanged: changedFiles.length, linesChanged: lines, newCommits,
     ...(task.checks?.({ ws, runDir, git, base: meta.base, changedFiles, newCommits }) ?? {}),
   };
